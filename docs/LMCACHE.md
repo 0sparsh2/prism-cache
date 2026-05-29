@@ -82,19 +82,36 @@ remote_serde: "cachegen"
 
 See [LMCache Docker deployment](https://docs.lmcache.ai/production/docker_deployment.html).
 
-## LiteLLM routing to vLLM (optional)
+## LiteLLM routing to vLLM
 
-Add to `gateway/litellm.multi.yaml`:
+Use the full gateway config (API + GPU + PRISM callback):
+
+```bash
+export VLLM_BASE_URL=http://localhost:8000/v1
+docker compose -f docker-compose.vllm-lmcache.yml up   # GPU host
+PYTHONPATH=src:gateway make gateway-full               # routes llama-3.1-8b → vLLM
+python examples/phase_f_vllm_chat.py --chat
+```
+
+`gateway/litellm.full.yaml` adds:
 
 ```yaml
   - model_name: llama-3.1-8b
     litellm_params:
       model: openai/meta-llama/Llama-3.1-8B-Instruct
-      api_base: http://host.docker.internal:8000/v1
+      api_base: os.environ/VLLM_BASE_URL
       api_key: os.environ/LITELLM_MASTER_KEY
 ```
 
-PRISM stays in-process; LiteLLM becomes a router to your GPU fleet.
+PRISM stays in-process; LiteLLM routes chat to your GPU fleet.
+
+### Multi-node cluster (scaffold)
+
+```bash
+docker compose -f docker-compose.vllm-lmcache-cluster.yml --profile cluster up
+```
+
+Uses `deploy/lmcache-config.remote.yaml` with `remote_url: lm://lmcache-server:65432`.
 
 ## References
 

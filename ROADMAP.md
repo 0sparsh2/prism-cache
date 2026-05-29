@@ -42,7 +42,8 @@ Research is complete under [`research/`](research/). Implementation phases below
 - [x] `lmcache_integration.py` — vLLM KV transfer config + launch spec from Tier 4 prompt
 - [x] `docker-compose.vllm-lmcache.yml`, `deploy/lmcache-config.yaml`
 - [x] `examples/phase_f_rag_vllm.py`, [docs/LMCACHE.md](docs/LMCACHE.md)
-- [ ] Production GPU fleet tuning (remote_url, multi-replica router)
+- [x] LiteLLM → vLLM route (`litellm.full.yaml`), `phase_f_vllm_chat.py`, cluster compose scaffold
+- [ ] Production GPU fleet tuning (validate multi-node LMCache in target environment)
 
 ## Integration order (decision)
 

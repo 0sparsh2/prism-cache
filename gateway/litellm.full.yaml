@@ -1,0 +1,45 @@
+# LiteLLM — NIM + Gemini + optional self-hosted vLLM (Phase F) + PRISM lane callback
+#
+#   PYTHONPATH=src:gateway make gateway-full
+#
+# Requires vLLM stack for llama-3.1-8b route: docker compose -f docker-compose.vllm-lmcache.yml up
+
+model_list:
+  - model_name: deepseek-v4-flash
+    litellm_params:
+      model: nvidia_nim/deepseek-ai/deepseek-v4-flash
+      api_key: os.environ/NVIDIA_NIM_API_KEY
+      api_base: os.environ/NVIDIA_NIM_API_BASE
+
+  - model_name: gemini-2.5-flash-lite
+    litellm_params:
+      model: gemini/gemini-2.5-flash-lite
+      api_key: os.environ/GEMINI_API_KEY
+
+  - model_name: gemini-embed
+    litellm_params:
+      model: gemini/gemini-embedding-001
+      api_key: os.environ/GEMINI_API_KEY
+
+  # Phase F — self-hosted vLLM + LMCache on :8000 (GPU host)
+  - model_name: llama-3.1-8b
+    litellm_params:
+      model: openai/meta-llama/Llama-3.1-8B-Instruct
+      api_base: os.environ/VLLM_BASE_URL
+      api_key: os.environ/LITELLM_MASTER_KEY
+
+litellm_settings:
+  drop_params: true
+  cache: true
+  cache_params:
+    type: redis
+    host: localhost
+    port: "6379"
+    namespace: prism:litellm
+    default_in_redis_ttl: 3600
+  set_verbose: false
+  callbacks:
+    - prism_callback.prism_handler
+
+general_settings:
+  master_key: os.environ/LITELLM_MASTER_KEY

@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.6.1] — 2026-05-29
+
+### Added
+
+- **`gateway/litellm.full.yaml`** — NIM + Gemini + vLLM route + PRISM callback
+- **`examples/phase_f_vllm_chat.py`** — vLLM health probe and optional live chat
+- **`docker-compose.vllm-lmcache-cluster.yml`** — multi-node LMCache scaffold
+- Makefile: `gateway-full`, `check-vllm`, `phase-f-up`, `demo-phase-f-chat`; expanded `run-demos`
+
 ## [0.6.0] — 2026-05-29
 
 ### Added
