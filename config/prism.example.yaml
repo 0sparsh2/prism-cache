@@ -1,0 +1,26 @@
+# PRISM-Cache configuration (reference)
+
+org_id: demo-corp
+corpus_id: employee-handbook
+
+defaults:
+  lane: org-static          # user-private | team | org-static
+  sensitivity: low          # low | medium | high
+  embed_model_id: text-embedding-3-small
+
+redis:
+  url: redis://localhost:6379/0
+  tier3_key_prefix: prism:t3
+  # Omit ttl_seconds to rely on corpus_version invalidation only
+  ttl_seconds: null
+
+routes:
+  coding-assistant:
+    lane: user-private
+    route_hint: coding
+  internal-faq-bot:
+    lane: org-static
+    sensitivity: low
+  program-rag:
+    lane: team
+    sensitivity: medium

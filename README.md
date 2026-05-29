@@ -82,20 +82,30 @@ Full diagram: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md)
 
 ```text
 prism-cache/
-├── README.md                 ← you are here
-├── ROADMAP.md                ← implementation checklist (build phase)
+├── README.md
+├── ROADMAP.md
+├── pyproject.toml
+├── src/prism_cache/          ← library (v0.1)
+├── tests/
+├── examples/
+├── config/prism.example.yaml
 ├── docs/
-│   └── ARCHITECTURE.md       ← tier + lane model for builders
-├── research/
-│   ├── report.md             ← Phase 3 synthesis
-│   ├── outline.yaml          ← research scope
-│   ├── fields.yaml           ← JSON schema
-│   ├── results/*.json        ← per-topic evidence (Phase 2)
-│   └── scripts/              ← validate / regenerate artifacts
+│   ├── ARCHITECTURE.md
+│   ├── BUILD.md
+│   └── SECURITY_REVIEW.md
+├── research/                 ← deep-research artifacts
 └── LICENSE
 ```
 
-`src/` and runtime code will land in the **build phase** ([ROADMAP.md](ROADMAP.md)).
+## Install & run (build v0.1)
+
+```bash
+pip install -e ".[dev]"
+pytest
+python examples/rag_demo.py
+```
+
+Full guide: [`docs/BUILD.md`](docs/BUILD.md)
 
 ---
 
@@ -131,17 +141,19 @@ python3 -m venv .venv && .venv/bin/pip install pyyaml
 
 ---
 
-## Build phase (next)
+## Build phase
 
-We are moving from research → implementation. Planned order:
+**v0.1 shipped:** Tier 0 + Tier 3 retrieval cache, policy lanes, metrics, Redis backend.
 
-1. **Lanes + Tier 0** (normalize, scrub, classify)  
-2. **Tier 3** retrieval cache in front of your vector DB  
+Next up ([ROADMAP.md](ROADMAP.md)):
+
+1. ~~**Lanes + Tier 0**~~ ✅  
+2. ~~**Tier 3** retrieval cache~~ ✅  
 3. **Tier 4** prompt structure + provider prefix markers  
 4. **Gateway** (LiteLLM) + **Tier 1** FAQ exact cache  
 5. **Tier 2** semantic — FAQ lane only, after security sign-off  
 
-Track progress in [ROADMAP.md](ROADMAP.md). Contributions welcome once `src/` lands.
+Track progress in [ROADMAP.md](ROADMAP.md). Contributions welcome.
 
 ---
 
@@ -167,4 +179,4 @@ Research produced with a structured **deep-research** workflow ([Weizhena/Deep-R
 
 ---
 
-**PRISM-Cache** · Research complete · **Build phase starting** · Issues and PRs welcome
+**PRISM-Cache v0.1** · Research complete · **Phase A+B shipped** · Phase C next

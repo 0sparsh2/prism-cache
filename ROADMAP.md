@@ -4,18 +4,18 @@ Research is complete under [`research/`](research/). Implementation phases below
 
 ## Phase A — Foundation (Week 0–1)
 
-- [ ] Cache lane taxonomy (`user-private`, `team`, `org-static`) in config
-- [ ] Tier 0: normalization spec + PII scrub hook (DLP or rules)
-- [ ] Key schema: `org_id`, `lane`, `sensitivity`, `corpus_version`, `model_id`
-- [ ] Metrics: hit rate, latency, tokens avoided, by tier and lane
-- [ ] Security review template for cross-user writes
+- [x] Cache lane taxonomy (`user-private`, `team`, `org-static`) in config
+- [x] Tier 0: normalization spec + PII scrub hook (DLP or rules)
+- [x] Key schema: `org_id`, `lane`, `sensitivity`, `corpus_version`, `model_id`
+- [x] Metrics: hit rate, latency, tokens avoided, by tier and lane
+- [x] Security review template for cross-user writes
 
 ## Phase B — Tier 3 retrieval cache (Week 1–2) ⭐
 
-- [ ] Redis (or Valkey) layer in front of vector DB
-- [ ] Corpus version service (tie to CMS / doc pipeline)
-- [ ] Integration with existing RAG path (embed → lookup → skip ANN on hit)
-- [ ] Load tests with synthetic duplicate queries across “users”
+- [x] Redis (or Valkey) layer in front of vector DB
+- [x] Corpus version service (tie to CMS / doc pipeline)
+- [x] Integration with existing RAG path (embed → lookup → skip ANN on hit)
+- [x] Load tests with synthetic duplicate queries across “users”
 
 ## Phase C — Tier 4 prefix optimization (Week 3–4)
 
@@ -38,6 +38,20 @@ Research is complete under [`research/`](research/). Implementation phases below
 ## Phase F — Self-hosted inference (optional)
 
 - [ ] LMCache + vLLM for cross-node KV if not API-only
+
+## v0.1 shipped (`src/prism_cache/`)
+
+| Module | Purpose |
+|--------|---------|
+| `tier0.py` | Normalize, scrub PII, classify lane |
+| `keys.py` | Deterministic cache keys |
+| `policy.py` | Cross-user write rules |
+| `tier3.py` | Retrieval cache + memory/Redis stores |
+| `pipeline.py` | `PrismPipeline.rag_retrieve()` |
+| `metrics.py` | Hit rate / latency registry |
+| `corpus.py` | Version bump / invalidation |
+
+See [`docs/BUILD.md`](docs/BUILD.md) for install and usage.
 
 ## Out of scope (v1)
 
