@@ -36,7 +36,9 @@ def create_pipeline(
     if config_path:
         settings = load_settings(config_path)
 
-    redis_url = redis_url or os.environ.get("REDIS_URL")
+    redis_url = redis_url if redis_url is not None else os.environ.get("REDIS_URL")
+    if redis_url == "":
+        redis_url = None
     cfg = settings.to_pipeline_config() if settings else PrismConfig(org_id="demo-corp")
     route_reg = routes or (settings.routes if settings and settings.routes else default_routes())
 

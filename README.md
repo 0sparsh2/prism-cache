@@ -12,6 +12,7 @@ Reuse prompts, retrieval, and inference **across users** (chat, RAG, coding tool
 [![Research](https://img.shields.io/badge/docs-research%20report-green)](research/report.md)
 [![Roadmap](https://img.shields.io/badge/status-build%20phase-orange)](ROADMAP.md)
 [![Benchmarks](https://img.shields.io/badge/eval-governance%20proof-blue)](docs/BENCHMARKS.md)
+[![Org scenario](https://img.shields.io/badge/demo-500%20employees-purple)](docs/ORG_SCENARIO.md)
 
 ---
 
@@ -99,6 +100,7 @@ prism-cache/
 │   ├── BUILD.md
 │   ├── GATEWAY.md
 │   ├── BENCHMARKS.md
+│   ├── ORG_SCENARIO.md
 │   ├── LMCACHE.md
 │   └── SECURITY_REVIEW.md
 ├── research/                 ← deep-research artifacts
@@ -112,7 +114,7 @@ python3.12 -m venv .venv && source .venv/bin/activate
 pip install -e ".[dev,gateway,redis]"
 cp .env.example .env   # add keys; REDIS_URL + PRISM_CHAT_MODEL for live demos
 
-make test              # 50 tests including governance eval gate
+make test              # 51 tests including governance eval gate
 make eval              # Tier 3 equivalence, lane isolation, Tier 2 near-intent FPR
 make run-all           # test + eval + offline/live demos (Redis + gateway if up)
 ```
@@ -134,7 +136,7 @@ pipeline.rag_retrieve("what is the expense policy for meals?", retriever, user_i
 pipeline.rag_retrieve("What is the EXPENSE policy for meals?", retriever, user_id="bob")
 ```
 
-Proof tables: [`docs/BENCHMARKS.md`](docs/BENCHMARKS.md) · Optional FAQ accelerator (Tier 1/2): `make demo-tier2`
+Proof tables: [`docs/BENCHMARKS.md`](docs/BENCHMARKS.md) · **Pilot story:** [`docs/ORG_SCENARIO.md`](docs/ORG_SCENARIO.md) (`make scenario-org`) · Optional FAQ accelerator: `make demo-tier2`
 
 ```bash
 make prod-redis && make gateway   # terminal 2: Redis + LiteLLM :4000
@@ -213,4 +215,4 @@ Research produced with a structured **deep-research** workflow ([Weizhena/Deep-R
 
 ---
 
-**PRISM-Cache v0.5.1** · Phases A–F · [Production](docs/PRODUCTION.md) · [Benchmarks](docs/BENCHMARKS.md)
+**PRISM-Cache v0.5.2** · Phases A–F · [Production](docs/PRODUCTION.md) · [Benchmarks](docs/BENCHMARKS.md) · [Org scenario](docs/ORG_SCENARIO.md)

@@ -210,6 +210,43 @@ If LiteLLM logs `GenerateRequestsPerDayPerProjectPerModel-FreeTier` with `quotaV
 
 PRISM Tier 1/2 still help after the first answer is cached — later users avoid `generate` calls.
 
+## Proxy enforcement — lanes before write-back
+
+**Do not** enable LiteLLM `redis-semantic` for org FAQ/RAG until PRISM lane policy is mirrored at the proxy. Proxy semantic cache has **no** concept of `user-private` / `team` / `org-static` — it keys on raw HTTP bodies only.
+
+### Correct split today
+
+| Enforcement point | Responsibility |
+|-------------------|----------------|
+| **Application** (PRISM library) | Tier 0 classify → route → lane; `write_policy_denial_reason`; Tier 3/2/1 keys include `org_id`, lane, `corpus_version` |
+| **LiteLLM proxy** | Provider routing, auth, optional **exact** HTTP body cache (`prism:litellm` namespace) |
+| **Not yet** | Automatic lane assignment inside LiteLLM pre-call hooks |
+
+### Request flow (target architecture)
+
+```text
+Client → LiteLLM :4000/v1
+            │
+            ▼
+     App middleware (your service)
+            │
+            ├─► route_name → routes.yaml lane (coding → user-private)
+            ├─► PRISM Tier 3 retrieve (shared chunk IDs if allowed)
+            ├─► LLM generate via LiteLLM
+            └─► PRISM async write-back ONLY if allows_tier*_write(ctx, tier0)
+```
+
+### Rules of thumb
+
+1. **Coding tools** → `coding-assistant` route → **`user-private`** — never org-wide Tier 1/2 writes.
+2. **Handbook RAG** → `program-rag` → **`team`** lane + `corpus_version` — Tier 3 lead path ([ORG_SCENARIO.md](ORG_SCENARIO.md)).
+3. **IT FAQ** → `internal-faq-bot` → **`org-static`** — Tier 1 exact; Tier 2 optional and threshold-gated.
+4. **Audit** — log tier, lane, hit/miss, denial reason; avoid raw PII prompts in logs (`prompt_audit.py`).
+
+Until proxy hooks ship, **call PRISM in application code before/after LiteLLM** — the library enforces policy; the proxy alone does not.
+
+See [ROADMAP.md](../ROADMAP.md): do not enable proxy semantic FAQ cache without lane mirroring.
+
 ## Generate config from PRISM settings
 
 ```python

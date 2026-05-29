@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.5.2] — 2026-05-29
+
+### Added
+
+- **Org scenario**: `examples/org_scenario_tier3.py`, `docs/ORG_SCENARIO.md`, `make scenario-org`
+- **`make run-all-cold`** — `FLUSHDB` before demos for miss→write→hit arc
+- Proxy enforcement section in `docs/GATEWAY.md`
+
+### Changed
+
+- ROADMAP next steps: `eval --live`, proxy lane hooks, Phase F fleet
+
 ## [0.5.1] — 2026-05-29
 
 ### Added

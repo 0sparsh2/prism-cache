@@ -1,0 +1,47 @@
+{
+  "generated_at": "2026-05-29T21:05:43.675391+00:00",
+  "scenario": {
+    "org_id": "demo-corp",
+    "employees": 5,
+    "paraphrases": 40,
+    "unique_normalized_queries": 37,
+    "total_rag_requests": 200,
+    "vector_db_calls": 37,
+    "tier3_hits": 163,
+    "tier3_misses": 37,
+    "tier3_hit_rate": 0.815,
+    "vector_calls_avoided": 163,
+    "vector_reduction_pct": 81.5,
+    "simulated_vector_latency_ms": 0.0,
+    "elapsed_ms": 2.96,
+    "corpus_version": "1",
+    "lane": "team"
+  },
+  "metrics": {
+    "tiers": {
+      "tier3:team": {
+        "hits": 163,
+        "misses": 37,
+        "writes": 37,
+        "write_denied": 0,
+        "hit_rate": 0.815,
+        "avg_latency_ms": 0.005
+      }
+    },
+    "prefix_cache": {
+      "totals": {
+        "requests": 0,
+        "cache_read_hits": 0,
+        "cache_read_hit_rate": 0.0,
+        "cache_write_events": 0,
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 0,
+        "cache_read_token_ratio": 0.0,
+        "top_fingerprints": []
+      },
+      "by_model": {}
+    }
+  }
+}

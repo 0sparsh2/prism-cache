@@ -51,6 +51,7 @@ Research is complete under [`research/`](research/). Implementation phases below
 | **1 — done** | Tier 2 + LiteLLM + Gemini (`litellm_client.py`, `faq_litellm_gemini.py`) | Closes the loop on your current `.env`; real embeddings + chat through one proxy |
 | **2 — done** | `factory.create_pipeline`, Redis backends, Makefile, `rag_litellm_demo.py` | One-liner setup from config + `.env` |
 | **3 — done** | [Production](docs/PRODUCTION.md) + Phase F scaffold | Redis compose, `create_production_pipeline`, vLLM+LMCache compose |
+| **4 — done** | [Org scenario](docs/ORG_SCENARIO.md) + proxy enforcement docs | 500-employee Tier 3 narrative, `make scenario-org`, GATEWAY lane rules |
 
 Do **not** enable LiteLLM `redis-semantic` for FAQ until PRISM policy lanes are mirrored at the proxy — PRISM Tier 2 is lane-gated; proxy semantic cache is not.
 
@@ -68,6 +69,12 @@ Do **not** enable LiteLLM `redis-semantic` for FAQ until PRISM policy lanes are 
 Prior modules: `tier0`, `tier3`, `tier4`, `pipeline`, `policy`, `metrics`, `corpus`, `keys`, `prompt_audit`, `prefix_metrics`.
 
 See [`docs/BUILD.md`](docs/BUILD.md) and [`docs/GATEWAY.md`](docs/GATEWAY.md).
+
+## Next (v0.6 candidates)
+
+- [ ] `eval --live` — Gemini-embed near-intent FPR alongside offline suite
+- [ ] LiteLLM pre-call hook prototype for route → lane assignment
+- [ ] Phase F GPU fleet tuning (remote_url, multi-replica router)
 
 ## Out of scope (v1)
 

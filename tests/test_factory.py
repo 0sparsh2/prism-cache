@@ -28,3 +28,11 @@ def test_create_pipeline_redis_url(monkeypatch):
     from prism_cache.tier1 import RedisExactStore
 
     assert isinstance(pipeline.tier1._store, RedisExactStore)
+
+
+def test_create_pipeline_redis_url_empty_disables_env(monkeypatch):
+    monkeypatch.setenv("REDIS_URL", "redis://localhost:6379/0")
+    pipeline = create_pipeline(config_path=None, redis_url="")
+    from prism_cache.tier1 import InMemoryExactStore
+
+    assert isinstance(pipeline.tier1._store, InMemoryExactStore)

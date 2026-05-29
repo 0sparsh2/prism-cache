@@ -1,6 +1,6 @@
 .PHONY: install test eval gateway redis-up prod-redis check-redis check-gateway \
 	demo-faq demo-faq-dry demo-rag demo-tier2 demo-production demo-production-live \
-	demo-phase-f run-all run-demos ensure-infra
+	demo-phase-f scenario-org run-all run-all-cold run-demos ensure-infra flush-redis
 
 LOAD_ENV = set -a && . ./.env && set +a
 
@@ -58,6 +58,16 @@ demo-production-live:
 demo-phase-f:
 	.venv/bin/python examples/phase_f_rag_vllm.py
 
+scenario-org:
+	.venv/bin/python examples/org_scenario_tier3.py --users 500 --vector-latency-ms 50
+
+scenario-org-fast:
+	.venv/bin/python examples/org_scenario_tier3.py --users 500 --vector-latency-ms 0
+
+flush-redis:
+	@redis-cli -p 6379 ping >/dev/null 2>&1 && redis-cli -p 6379 FLUSHDB && echo "Redis FLUSHDB OK" \
+		|| echo "Redis not running — skip flush"
+
 run-demos:
 	@echo "=== tier2 (offline) ==="
 	.venv/bin/python examples/tier2_faq_demo.py
@@ -81,3 +91,6 @@ run-demos:
 
 run-all: test eval run-demos
 	@echo "\nAll targets finished."
+
+run-all-cold: flush-redis run-all
+	@echo "\nCold-cache run finished."
