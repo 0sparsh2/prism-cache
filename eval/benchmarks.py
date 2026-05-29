@@ -74,6 +74,11 @@ POLICY_MUST_DENY = [
     ),
 ]
 
+# Safe FAQ paraphrase — should be high similarity under live embedder (informational)
+TIER2_SAFE_PARAPHRASES = [
+    ("how do I reset my password?", "how do I reset my login password?"),
+]
+
 ORG_CTX = CacheContext(
     org_id="acme",
     lane=CacheLane.ORG_STATIC,
@@ -121,6 +126,7 @@ def run_tier2_near_intent_fpr(
     *,
     threshold: float = 0.95,
     embed_fn=hash_bag_embed,
+    name: str = "tier2_near_intent",
 ) -> BenchmarkRow:
     store = InMemorySemanticStore()
     cache = Tier2SemanticCache(store, embed_fn, default_threshold=threshold)
@@ -135,12 +141,66 @@ def run_tier2_near_intent_fpr(
             false_positives += 1
     rate = false_positives / len(pairs) if pairs else 0.0
     return BenchmarkRow(
-        name="tier2_near_intent",
+        name=name,
         metric="false_positive_rate",
         value=rate,
         target="= 0.0",
         passed=rate == 0.0,
         notes=f"{false_positives}/{len(pairs)} adversarial pairs hit at threshold={threshold}",
+    )
+
+
+def run_tier2_near_intent_live(
+    embed_fn,
+    *,
+    threshold: float = 0.95,
+) -> BenchmarkRow:
+    """Live embedding FPR on near-intent pairs — report-only (requires LiteLLM embed)."""
+    from prism_cache.tier2 import cosine_similarity
+
+    pairs = NEAR_INTENT_TIER2_MUST_MISS
+    false_positives = 0
+    max_sim = 0.0
+    sim_notes: list[str] = []
+    for seed, probe in pairs:
+        sim = cosine_similarity(embed_fn(seed), embed_fn(probe))
+        max_sim = max(max_sim, sim)
+        sim_notes.append(f"{sim:.3f}")
+        if sim >= threshold:
+            false_positives += 1
+    rate = false_positives / len(pairs) if pairs else 0.0
+    return BenchmarkRow(
+        name="tier2_near_intent_live",
+        metric="false_positive_rate",
+        value=rate,
+        target=f"report (threshold={threshold})",
+        passed=True,
+        notes=(
+            f"{false_positives}/{len(pairs)} would hit; max_sim={max_sim:.3f}; "
+            f"sims=[{', '.join(sim_notes)}]"
+        ),
+    )
+
+
+def run_tier2_safe_paraphrase_live(
+    embed_fn,
+    *,
+    threshold: float = 0.95,
+) -> BenchmarkRow:
+    """Live similarity on safe FAQ paraphrase — informational complement to near-intent."""
+    from prism_cache.tier2 import cosine_similarity
+
+    sims: list[float] = []
+    for a, b in TIER2_SAFE_PARAPHRASES:
+        sims.append(cosine_similarity(embed_fn(a), embed_fn(b)))
+    avg = sum(sims) / len(sims) if sims else 0.0
+    return BenchmarkRow(
+        name="tier2_safe_paraphrase_live",
+        metric="avg_similarity",
+        value=avg,
+        target=f"report (threshold={threshold})",
+        passed=True,
+        notes=f"safe FAQ paraphrase sims={[f'{s:.3f}' for s in sims]}",
     )
 
 
@@ -289,7 +349,7 @@ def run_cross_user_hit_rate(*, users: int = 50, queries: int = 10) -> BenchmarkR
     )
 
 
-def run_all_benchmarks() -> BenchmarkReport:
+def run_all_benchmarks(*, include_live: bool = False, live_embed_fn=None) -> BenchmarkReport:
     report = BenchmarkReport()
     report.rows.extend(
         [
@@ -301,4 +361,11 @@ def run_all_benchmarks() -> BenchmarkReport:
             run_tier3_near_intent_overlap(),
         ]
     )
+    if include_live and live_embed_fn is not None:
+        report.rows.extend(
+            [
+                run_tier2_near_intent_live(live_embed_fn),
+                run_tier2_safe_paraphrase_live(live_embed_fn),
+            ]
+        )
     return report

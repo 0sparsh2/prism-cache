@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.6.0] — 2026-05-29
+
+### Added
+
+- **`eval --live`** / `make eval-live` — live Gemini-embed near-intent + safe paraphrase rows
+- **`proxy_enforcement.py`** — route → lane resolution, audit JSONL, LiteLLM metadata injection
+- **`gateway/prism_callback.py`** + `litellm.prism.yaml` — LiteLLM pre-call hook prototype
+- `examples/proxy_lane_demo.py`, `make gateway-prism`, `make demo-proxy`
+
+### Changed
+
+- ROADMAP: eval-live and proxy hook marked done; Phase F GPU fleet remains open
+
 ## [0.5.2] — 2026-05-29
 
 ### Added

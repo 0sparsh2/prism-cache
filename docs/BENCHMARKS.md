@@ -12,8 +12,9 @@ These workloads answer what infra buyers ask in the first ten seconds:
 ## Run locally
 
 ```bash
-make eval          # print table + write eval/results/latest.json
-make test          # includes eval gate in CI
+make eval          # offline proof (CI gate)
+make eval-live     # + Gemini embed near-intent table (needs gateway)
+make test          # includes offline eval gate in CI
 ```
 
 Or:
@@ -59,7 +60,20 @@ Tier 2 writes denied on `team` lane and PII-downgraded prompts — expected deni
 
 Adversarial pairs (cancel/pause, terminate/suspend, etc.) at threshold **0.95** with deterministic embedder. Target: **0% false hits**.
 
-Uses `hash_bag_embed` for reproducibility without API keys. Live embedding FPR may differ — extend with `eval/run_benchmarks.py --live` later.
+Uses `hash_bag_embed` for reproducibility without API keys. Live embedding FPR:
+
+```bash
+make eval-live     # writes eval/results/latest_live.json
+```
+
+Live rows (`tier2_near_intent_live`, `tier2_safe_paraphrase_live`) are **report-only** — they document production conservatism under real embeddings and do not gate CI.
+
+Example live run (Gemini `gemini-embed`, threshold 0.95):
+
+| Row | Value | Notes |
+|-----|-------|-------|
+| tier2_near_intent_live | FPR 0.0 | max_sim=0.746 on cancel/pause pairs — below threshold |
+| tier2_safe_paraphrase_live | avg_sim 0.85 | “login password” paraphrase — also below 0.95 (matches live FAQ carol MISS) |
 
 ### Tier 3 near-intent chunk overlap (informational)
 

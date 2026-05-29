@@ -1,0 +1,72 @@
+{
+  "generated_at": "2026-05-29T21:30:59.223268+00:00",
+  "live": true,
+  "embed_model": "gemini-embed",
+  "rows": [
+    {
+      "name": "tier3_retrieval_equivalence",
+      "metric": "precision",
+      "value": 1.0,
+      "target": "= 1.0",
+      "passed": true,
+      "notes": "3/3 paraphrase pairs matched chunk sets"
+    },
+    {
+      "name": "cross_user_tier3",
+      "metric": "hit_rate",
+      "value": 0.98,
+      "target": "> 0.9",
+      "passed": true,
+      "notes": "vector_calls=10 (expect 10) over 50 users \u00d7 10 queries"
+    },
+    {
+      "name": "lane_isolation",
+      "metric": "cross_lane_leak_rate",
+      "value": 0.0,
+      "target": "= 0.0",
+      "passed": true,
+      "notes": "user-private retrieval must not appear in org-static lookup"
+    },
+    {
+      "name": "policy_governance",
+      "metric": "denial_accuracy",
+      "value": 1.0,
+      "target": "= 1.0",
+      "passed": true,
+      "notes": "2/2 expected denials"
+    },
+    {
+      "name": "tier2_near_intent",
+      "metric": "false_positive_rate",
+      "value": 0.0,
+      "target": "= 0.0",
+      "passed": true,
+      "notes": "0/6 adversarial pairs hit at threshold=0.95"
+    },
+    {
+      "name": "tier3_near_intent_overlap",
+      "metric": "chunk_overlap_rate",
+      "value": 1.0,
+      "target": "report only",
+      "passed": true,
+      "notes": "Informational \u2014 documents synthesis risk when intents differ but chunks overlap"
+    },
+    {
+      "name": "tier2_near_intent_live",
+      "metric": "false_positive_rate",
+      "value": 0.0,
+      "target": "report (threshold=0.95)",
+      "passed": true,
+      "notes": "0/4 would hit; max_sim=0.746; sims=[0.746, 0.684, 0.619, 0.695]"
+    },
+    {
+      "name": "tier2_safe_paraphrase_live",
+      "metric": "avg_similarity",
+      "value": 0.8498626221326878,
+      "target": "report (threshold=0.95)",
+      "passed": true,
+      "notes": "safe FAQ paraphrase sims=['0.850']"
+    }
+  ],
+  "passed": true
+}

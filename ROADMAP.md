@@ -72,8 +72,8 @@ See [`docs/BUILD.md`](docs/BUILD.md) and [`docs/GATEWAY.md`](docs/GATEWAY.md).
 
 ## Next (v0.6 candidates)
 
-- [ ] `eval --live` — Gemini-embed near-intent FPR alongside offline suite
-- [ ] LiteLLM pre-call hook prototype for route → lane assignment
+- [x] `eval --live` — Gemini-embed near-intent FPR alongside offline suite
+- [x] LiteLLM pre-call hook prototype for route → lane assignment
 - [ ] Phase F GPU fleet tuning (remote_url, multi-replica router)
 
 ## Out of scope (v1)

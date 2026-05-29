@@ -1,28 +1,28 @@
-# LiteLLM gateway — org-wide OpenAI-compatible entry for PRISM-Cache
+# LiteLLM + PRISM lane callback (x-prism-route header → metadata)
 #
-# Generate from Python:
-#   python -c "from prism_cache.litellm_config import build_litellm_config, render_litellm_yaml; print(render_litellm_yaml(build_litellm_config()))" > gateway/litellm.generated.yaml
+#   PYTHONPATH=src:gateway make gateway-prism
 #
-# Run:
-#   export OPENAI_API_KEY=...
-#   export ANTHROPIC_API_KEY=...
-#   export LITELLM_MASTER_KEY=sk-prism-local
-#   litellm --config gateway/litellm.prism.yaml --port 4000
-#
-# All tools point to: http://localhost:4000/v1
+# Same models as litellm.multi.yaml plus prism_callback.prism_handler pre-call hook.
 
 model_list:
-  - model_name: gpt-4o-mini
+  - model_name: deepseek-v4-flash
     litellm_params:
-      model: gpt-4o-mini
-      api_key: os.environ/OPENAI_API_KEY
+      model: nvidia_nim/deepseek-ai/deepseek-v4-flash
+      api_key: os.environ/NVIDIA_NIM_API_KEY
+      api_base: os.environ/NVIDIA_NIM_API_BASE
 
-  - model_name: claude-sonnet-4-20250514
+  - model_name: gemini-2.5-flash-lite
     litellm_params:
-      model: claude-sonnet-4-20250514
-      api_key: os.environ/ANTHROPIC_API_KEY
+      model: gemini/gemini-2.5-flash-lite
+      api_key: os.environ/GEMINI_API_KEY
+
+  - model_name: gemini-embed
+    litellm_params:
+      model: gemini/gemini-embedding-001
+      api_key: os.environ/GEMINI_API_KEY
 
 litellm_settings:
+  drop_params: true
   cache: true
   cache_params:
     type: redis
@@ -31,6 +31,8 @@ litellm_settings:
     namespace: prism:litellm
     default_in_redis_ttl: 3600
   set_verbose: false
+  callbacks:
+    - prism_callback.prism_handler
 
 general_settings:
   master_key: os.environ/LITELLM_MASTER_KEY

@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-29T21:05:43.675391+00:00",
+  "generated_at": "2026-05-29T21:30:55.332547+00:00",
   "scenario": {
     "org_id": "demo-corp",
     "employees": 5,
@@ -13,7 +13,7 @@
     "vector_calls_avoided": 163,
     "vector_reduction_pct": 81.5,
     "simulated_vector_latency_ms": 0.0,
-    "elapsed_ms": 2.96,
+    "elapsed_ms": 3.45,
     "corpus_version": "1",
     "lane": "team"
   },
@@ -25,7 +25,7 @@
         "writes": 37,
         "write_denied": 0,
         "hit_rate": 0.815,
-        "avg_latency_ms": 0.005
+        "avg_latency_ms": 0.006
       }
     },
     "prefix_cache": {

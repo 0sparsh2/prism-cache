@@ -245,7 +245,27 @@ Client → LiteLLM :4000/v1
 
 Until proxy hooks ship, **call PRISM in application code before/after LiteLLM** — the library enforces policy; the proxy alone does not.
 
-See [ROADMAP.md](../ROADMAP.md): do not enable proxy semantic FAQ cache without lane mirroring.
+### Prototype: `gateway-prism` callback
+
+```bash
+make gateway-prism   # PYTHONPATH=src:gateway + litellm.prism.yaml
+make demo-proxy      # offline route → lane resolution
+```
+
+Clients pass PRISM headers on LiteLLM requests:
+
+```bash
+curl -s http://localhost:4000/v1/chat/completions \
+  -H "Authorization: Bearer $LITELLM_MASTER_KEY" \
+  -H "x-prism-route: program-rag" \
+  -H "x-prism-user-id: employee-0042" \
+  -H "Content-Type: application/json" \
+  -d '{"model":"deepseek-v4-flash","messages":[{"role":"user","content":"travel policy?"}]}'
+```
+
+The callback (`gateway/prism_callback.py`) resolves route → lane and injects `metadata.prism_*` before the upstream call. Full write-back enforcement remains in the app library (`proxy_enforcement.py`).
+
+See `examples/proxy_lane_demo.py`.
 
 ## Generate config from PRISM settings
 

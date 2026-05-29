@@ -1,6 +1,6 @@
-.PHONY: install test eval gateway redis-up prod-redis check-redis check-gateway \
+.PHONY: install test eval eval-live gateway gateway-prism redis-up prod-redis check-redis check-gateway \
 	demo-faq demo-faq-dry demo-rag demo-tier2 demo-production demo-production-live \
-	demo-phase-f scenario-org run-all run-all-cold run-demos ensure-infra flush-redis
+	demo-phase-f demo-proxy scenario-org run-all run-all-cold run-demos ensure-infra flush-redis
 
 LOAD_ENV = set -a && . ./.env && set +a
 
@@ -13,6 +13,9 @@ test:
 
 eval:
 	.venv/bin/python -m eval.run_benchmarks
+
+eval-live:
+	$(LOAD_ENV) && .venv/bin/python -m eval.run_benchmarks --live
 
 redis-up:
 	docker compose up -d redis
@@ -36,6 +39,12 @@ ensure-infra: prod-redis
 
 gateway:
 	$(LOAD_ENV) && .venv/bin/litellm --config gateway/litellm.multi.yaml --port 4000
+
+gateway-prism:
+	PYTHONPATH=src:gateway $(LOAD_ENV) && .venv/bin/litellm --config gateway/litellm.prism.yaml --port 4000
+
+demo-proxy:
+	.venv/bin/python examples/proxy_lane_demo.py
 
 demo-faq:
 	$(LOAD_ENV) && .venv/bin/python examples/faq_litellm_gemini.py

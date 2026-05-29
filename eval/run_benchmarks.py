@@ -30,6 +30,18 @@ def _markdown_table(report) -> str:
     return "\n".join(lines)
 
 
+def _load_live_embed_fn():
+    from prism_cache.litellm_client import LiteLLMClient, load_dotenv
+
+    load_dotenv(str(ROOT / ".env"))
+    client = LiteLLMClient.from_env()
+    if not client.health_check():
+        raise RuntimeError(
+            "LiteLLM not reachable — start: make gateway (or skip --live)"
+        )
+    return client.make_embed_fn(), client.embed_model
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description="PRISM governance + retrieval benchmarks")
     parser.add_argument(
@@ -37,22 +49,37 @@ def main() -> int:
         default=str(ROOT / "eval" / "results" / "latest.json"),
         help="Write machine-readable results",
     )
+    parser.add_argument(
+        "--live",
+        action="store_true",
+        help="Add live Tier 2 embedding rows via LiteLLM (requires gateway + keys)",
+    )
     parser.add_argument("--quiet", action="store_true")
     args = parser.parse_args()
 
-    report = run_all_benchmarks()
+    live_embed = None
+    embed_model = None
+    if args.live:
+        live_embed, embed_model = _load_live_embed_fn()
+
+    report = run_all_benchmarks(include_live=args.live, live_embed_fn=live_embed)
     payload = {
         "generated_at": datetime.now(UTC).isoformat(),
+        "live": args.live,
+        "embed_model": embed_model,
         **report.to_dict(),
     }
 
     out_path = Path(args.json_out)
+    if args.live and out_path.name == "latest.json":
+        out_path = out_path.parent / "latest_live.json"
     out_path.parent.mkdir(parents=True, exist_ok=True)
     out_path.write_text(json.dumps(payload, indent=2) + "\n")
 
     if not args.quiet:
-        print("PRISM eval benchmarks")
-        print("=====================")
+        title = "PRISM eval benchmarks" + (" (offline + live)" if args.live else "")
+        print(title)
+        print("=" * len(title))
         print(_markdown_table(report))
         print()
         for row in report.rows:
