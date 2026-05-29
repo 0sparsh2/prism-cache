@@ -1,0 +1,34 @@
+# Production PRISM-Cache — use with REDIS_URL + LiteLLM proxy
+
+org_id: your-org-id
+corpus_id: employee-handbook
+
+defaults:
+  lane: org-static
+  sensitivity: low
+  embed_model_id: gemini-embed
+  tier2_similarity_threshold: 0.95
+
+redis:
+  url: redis://redis:6379/0
+  tier1_key_prefix: prism:t1
+  tier2_key_prefix: prism:t2
+  tier3_key_prefix: prism:t3
+  ttl_seconds: 86400
+
+routes:
+  coding-assistant:
+    lane: user-private
+    route_hint: coding
+    tier1_enabled: false
+    tier2_enabled: false
+  internal-faq-bot:
+    lane: org-static
+    sensitivity: low
+    tier1_enabled: true
+    tier2_enabled: true
+  program-rag:
+    lane: team
+    sensitivity: medium
+    tier1_enabled: false
+    tier2_enabled: false

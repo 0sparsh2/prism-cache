@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.5.0] — 2026-05-29
+
+### Added
+
+- **Production**: `config/prism.production.yaml`, `docker-compose.prod.yml`, `docs/PRODUCTION.md`
+- `create_production_pipeline()`, `examples/production_app.py`
+- **Phase F scaffold**: `lmcache_integration.py`, `docker-compose.vllm-lmcache.yml`, `examples/phase_f_rag_vllm.py`
+
 ## [0.4.0] — 2026-05-29
 
 ### Added

@@ -65,3 +65,20 @@ def create_pipeline(
         tier2_embed=embed or hash_bag_embed,
         tier1_ttl_seconds=settings.redis.ttl_seconds if settings and settings.redis else None,
     )
+
+
+def create_production_pipeline(
+    *,
+    config_path: str | Path | None = None,
+    env_path: str | Path | None = None,
+    redis_url: str | None = None,
+    use_litellm_embed: bool = True,
+) -> PrismPipeline:
+    """Production defaults: prism.production.yaml + Redis + LiteLLM embeddings."""
+    default_cfg = Path(__file__).resolve().parents[2] / "config" / "prism.production.yaml"
+    return create_pipeline(
+        config_path=config_path or default_cfg,
+        env_path=env_path,
+        redis_url=redis_url,
+        use_litellm_embed=use_litellm_embed,
+    )

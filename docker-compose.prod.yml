@@ -1,0 +1,24 @@
+# Production Redis for PRISM Tier 1/2/3 (+ LiteLLM proxy cache if configured)
+#
+#   docker compose -f docker-compose.prod.yml up -d
+#   export REDIS_URL=redis://localhost:6379/0
+#   make gateway    # LiteLLM on host (see docs/PRODUCTION.md)
+#
+# GPU inference: docker-compose.vllm-lmcache.yml
+
+services:
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - prism-redis:/data
+    command: redis-server --appendonly yes
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+volumes:
+  prism-redis:

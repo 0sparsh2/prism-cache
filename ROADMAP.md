@@ -35,12 +35,14 @@ Research is complete under [`research/`](research/). Implementation phases below
 - [x] Optional: vCache-style per-entry thresholds (`similarity_threshold` on store)
 - [x] Red-team paraphrase suite before widening lanes (`tests/test_tier2_redteam.py`)
 
-## Phase F — Self-hosted inference (optional)
+## Phase F — Self-hosted inference (scaffold)
 
-**Status: deferred** until you run vLLM (or similar) on your own GPUs. Your stack is API-first (Gemini + NIM via LiteLLM); LMCache does not apply to hosted APIs.
+**Status: scaffold shipped** — run when you have GPUs. API path uses [docs/PRODUCTION.md](docs/PRODUCTION.md).
 
-- [ ] LMCache + vLLM for cross-node KV if not API-only
-- [ ] Document Helm / sidecar pattern when self-hosting
+- [x] `lmcache_integration.py` — vLLM KV transfer config + launch spec from Tier 4 prompt
+- [x] `docker-compose.vllm-lmcache.yml`, `deploy/lmcache-config.yaml`
+- [x] `examples/phase_f_rag_vllm.py`, [docs/LMCACHE.md](docs/LMCACHE.md)
+- [ ] Production GPU fleet tuning (remote_url, multi-replica router)
 
 ## Integration order (decision)
 
@@ -48,7 +50,7 @@ Research is complete under [`research/`](research/). Implementation phases below
 |----------|------|-----|
 | **1 — done** | Tier 2 + LiteLLM + Gemini (`litellm_client.py`, `faq_litellm_gemini.py`) | Closes the loop on your current `.env`; real embeddings + chat through one proxy |
 | **2 — done** | `factory.create_pipeline`, Redis backends, Makefile, `rag_litellm_demo.py` | One-liner setup from config + `.env` |
-| **3 — later** | Phase F (LMCache) | See [`docs/LMCACHE.md`](docs/LMCACHE.md) when vLLM is in scope |
+| **3 — done** | [Production](docs/PRODUCTION.md) + Phase F scaffold | Redis compose, `create_production_pipeline`, vLLM+LMCache compose |
 
 Do **not** enable LiteLLM `redis-semantic` for FAQ until PRISM policy lanes are mirrored at the proxy — PRISM Tier 2 is lane-gated; proxy semantic cache is not.
 

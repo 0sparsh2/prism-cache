@@ -193,4 +193,4 @@ Research produced with a structured **deep-research** workflow ([Weizhena/Deep-R
 
 ---
 
-**PRISM-Cache v0.4** · Phases A–E shipped · Phase F next
+**PRISM-Cache v0.5** · Phases A–F (API + LMCache scaffold) · [Production](docs/PRODUCTION.md)

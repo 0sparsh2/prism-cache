@@ -1,0 +1,41 @@
+# Phase F — vLLM + LMCache (requires NVIDIA GPU + HF model access)
+#
+# PRISM prepares stable prefixes in your app; this stack reuses KV across requests.
+#
+#   export HF_TOKEN=...
+#   docker compose -f docker-compose.vllm-lmcache.yml up
+#
+# Point LiteLLM or apps at http://localhost:8000/v1
+# See docs/LMCACHE.md and examples/phase_f_rag_vllm.py
+
+services:
+  vllm-lmcache:
+    image: lmcache/vllm-openai:latest
+    ports:
+      - "8000:8000"
+    environment:
+      HF_TOKEN: ${HF_TOKEN}
+      LMCACHE_CONFIG_FILE: /app/lmcache-config.yaml
+      LMCACHE_CHUNK_SIZE: "256"
+      LMCACHE_LOCAL_CPU: "True"
+      LMCACHE_MAX_LOCAL_CPU_SIZE: "5"
+    volumes:
+      - ./deploy/lmcache-config.yaml:/app/lmcache-config.yaml:ro
+      - huggingface-cache:/root/.cache/huggingface
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    command: >
+      meta-llama/Llama-3.1-8B-Instruct
+      --host 0.0.0.0
+      --port 8000
+      --max-model-len 8192
+      --kv-transfer-config
+      {"kv_connector":"LMCacheConnectorV1","kv_role":"kv_both"}
+
+volumes:
+  huggingface-cache:

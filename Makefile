@@ -24,3 +24,12 @@ demo-rag:
 
 demo-tier2:
 	.venv/bin/python examples/tier2_faq_demo.py
+
+prod-redis:
+	docker compose -f docker-compose.prod.yml up -d
+
+demo-production:
+	set -a && . ./.env && set +a && .venv/bin/python examples/production_app.py --dry-run
+
+demo-phase-f:
+	.venv/bin/python examples/phase_f_rag_vllm.py
