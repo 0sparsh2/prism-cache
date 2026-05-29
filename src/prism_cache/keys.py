@@ -5,6 +5,7 @@ from typing import Any
 
 from prism_cache.models import CacheContext, CacheLane, CacheTier
 from prism_cache.tier0 import stable_json
+from prism_cache.tier0 import stable_json
 
 
 def build_cache_key(
@@ -47,3 +48,18 @@ def build_tier3_key_parts(
         "top_k": top_k,
         "filters": filters or {},
     }
+
+
+def build_tier2_bucket_key(ctx: CacheContext, *, model_id: str) -> str:
+    """Namespace for semantic answer entries (many queries per bucket)."""
+    material = {
+        "org_id": ctx.org_id,
+        "lane": ctx.lane.value,
+        "sensitivity": ctx.sensitivity.value,
+        "corpus_version": ctx.corpus_version,
+        "clearance": ctx.clearance,
+        "model_id": model_id or "default",
+        "tier": CacheTier.TIER2.value,
+    }
+    digest = hashlib.sha256(stable_json(material).encode("utf-8")).hexdigest()
+    return f"prism:{ctx.org_id}:{ctx.lane.value}:tier2:{digest[:24]}"

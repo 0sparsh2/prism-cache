@@ -1,0 +1,33 @@
+# LiteLLM gateway — NVIDIA NIM (OpenAI-compatible) for PRISM-Cache
+#
+# Prerequisites:
+#   cp .env.example .env   # set NVIDIA_NIM_API_KEY, LITELLM_MASTER_KEY
+#   set -a && source .env && set +a
+#   docker compose up -d redis   # optional, for LiteLLM Redis cache
+#
+# Run:
+#   litellm --config gateway/litellm.nim.yaml --port 4000
+#
+# Clients: http://localhost:4000/v1
+# Request model name: deepseek-v4-flash (maps to NVIDIA_MODEL below)
+
+model_list:
+  - model_name: deepseek-v4-flash
+    litellm_params:
+      model: nvidia_nim/deepseek-ai/deepseek-v4-flash
+      api_key: os.environ/NVIDIA_NIM_API_KEY
+      api_base: os.environ/NVIDIA_NIM_API_BASE
+
+litellm_settings:
+  drop_params: true
+  cache: true
+  cache_params:
+    type: redis
+    host: localhost
+    port: "6379"
+    namespace: prism:litellm
+    default_in_redis_ttl: 3600
+  set_verbose: false
+
+general_settings:
+  master_key: os.environ/LITELLM_MASTER_KEY

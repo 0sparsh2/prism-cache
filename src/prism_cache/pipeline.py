@@ -9,6 +9,7 @@ from prism_cache.models import (
     CacheContext,
     CacheLane,
     CacheLookupResult,
+    CacheTier,
     ChunkResult,
     Sensitivity,
     Tier0Result,
@@ -18,6 +19,7 @@ from prism_cache.prompt_audit import PromptAuditResult, audit_assembled
 from prism_cache.routes import RouteRegistry, default_routes
 from prism_cache.tier0 import process_tier0
 from prism_cache.tier1 import InMemoryExactStore, Tier1ExactCache, Tier1LookupResult
+from prism_cache.tier2 import EmbedFn, InMemorySemanticStore, Tier2LookupResult, Tier2SemanticCache, hash_bag_embed
 from prism_cache.tier3 import InMemoryRetrievalStore, Retriever, RetrievalStore, Tier3RetrievalCache
 from prism_cache.tier4 import AssembledPrompt, ChunkTextResolver, assemble_rag_prompt, anthropic_request_body
 
@@ -29,6 +31,7 @@ class PrismConfig:
     default_lane: CacheLane = CacheLane.ORG_STATIC
     default_sensitivity: Sensitivity = Sensitivity.LOW
     embed_model_id: str = "text-embedding-3-small"
+    tier2_similarity_threshold: float = 0.95
     default_system_prompt: str = (
         "You are a helpful assistant. Answer using only the provided documents."
     )
@@ -49,7 +52,9 @@ class RagPromptBundle:
 class FaqAnswerResult:
     text: str
     from_cache: bool
+    cache_tier: CacheTier | None
     tier1: Tier1LookupResult | None
+    tier2: Tier2LookupResult | None
     tier0: Tier0Result
     ctx: CacheContext
 
@@ -66,11 +71,14 @@ class PrismPipeline:
         *,
         store: RetrievalStore | None = None,
         exact_store: InMemoryExactStore | None = None,
+        semantic_store: InMemorySemanticStore | None = None,
         corpus: CorpusVersionProvider | None = None,
         metrics: MetricsRegistry | None = None,
         prefix_metrics: PrefixCacheMetricsRegistry | None = None,
         routes: RouteRegistry | None = None,
         tier1_ttl_seconds: int | None = None,
+        tier2_embed: EmbedFn | None = None,
+        tier2_threshold: float | None = None,
     ) -> None:
         self.config = config
         self.corpus = corpus or InMemoryCorpusVersionProvider()
@@ -86,6 +94,12 @@ class PrismPipeline:
             exact_store or InMemoryExactStore(),
             metrics=self.metrics,
             default_ttl_seconds=tier1_ttl_seconds,
+        )
+        self.tier2 = Tier2SemanticCache(
+            semantic_store or InMemorySemanticStore(),
+            tier2_embed or hash_bag_embed,
+            metrics=self.metrics,
+            default_threshold=tier2_threshold or config.tier2_similarity_threshold,
         )
 
     def corpus_version(self) -> str:
@@ -154,9 +168,9 @@ class PrismPipeline:
         team_id: str | None = None,
     ) -> FaqAnswerResult:
         """
-        Tier 1 exact cache for FAQ routes (org-static by default).
+        FAQ answer path: Tier 1 exact → Tier 2 semantic → generate.
 
-        Coding routes disable Tier 1 and always call `generate`.
+        Coding routes disable Tier 1/2 and always call `generate`.
         """
         rule = self.routes.resolve(route_name)
         tier0, ctx = self.prepare_for_route(
@@ -167,26 +181,56 @@ class PrismPipeline:
             model_id=model_id,
         )
 
-        if not rule.tier1_enabled:
+        if not rule.tier1_enabled and not rule.tier2_enabled:
             text = generate(tier0.normalized_query)
             return FaqAnswerResult(
                 text=text,
                 from_cache=False,
+                cache_tier=None,
                 tier1=None,
+                tier2=None,
                 tier0=tier0,
                 ctx=ctx,
             )
 
-        text, lookup = self.tier1.lookup_or_generate(
-            ctx,
-            tier0,
-            generate,
-            model_id=model_id,
-        )
+        if rule.tier1_enabled:
+            t1 = self.tier1.lookup(ctx, tier0, model_id=model_id)
+            if t1.hit and t1.answer:
+                return FaqAnswerResult(
+                    text=t1.answer.text,
+                    from_cache=True,
+                    cache_tier=CacheTier.TIER1,
+                    tier1=t1,
+                    tier2=None,
+                    tier0=tier0,
+                    ctx=ctx,
+                )
+
+        if rule.tier2_enabled:
+            t2 = self.tier2.lookup(ctx, tier0, model_id=model_id)
+            if t2.hit and t2.answer:
+                return FaqAnswerResult(
+                    text=t2.answer.text,
+                    from_cache=True,
+                    cache_tier=CacheTier.TIER2,
+                    tier1=None,
+                    tier2=t2,
+                    tier0=tier0,
+                    ctx=ctx,
+                )
+
+        text = generate(tier0.normalized_query)
+        if rule.tier1_enabled:
+            self.tier1.store(ctx, tier0, text, model_id=model_id)
+        if rule.tier2_enabled:
+            self.tier2.store(ctx, tier0, text, model_id=model_id)
+
         return FaqAnswerResult(
             text=text,
-            from_cache=lookup.hit,
-            tier1=lookup,
+            from_cache=False,
+            cache_tier=None,
+            tier1=None,
+            tier2=None,
             tier0=tier0,
             ctx=ctx,
         )
@@ -301,6 +345,8 @@ class PrismPipeline:
         if isinstance(usage, dict):
             if provider == "openai":
                 parsed = PrefixCacheUsage.from_openai(usage)
+            elif provider == "gemini":
+                parsed = PrefixCacheUsage.from_gemini(usage)
             else:
                 parsed = PrefixCacheUsage.from_anthropic(usage)
         else:

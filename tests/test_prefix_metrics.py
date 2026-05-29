@@ -27,3 +27,26 @@ def test_record_anthropic_usage_and_dashboard():
     text = reg.dashboard_text()
     assert "Tier 4" in text
     assert "Cache read hits" in text
+
+
+def test_from_gemini_usage_metadata():
+    usage = PrefixCacheUsage.from_gemini(
+        {
+            "promptTokenCount": 5000,
+            "candidatesTokenCount": 120,
+            "cachedContentTokenCount": 4096,
+        }
+    )
+    assert usage.input_tokens == 5000
+    assert usage.output_tokens == 120
+    assert usage.cache_read_input_tokens == 4096
+    assert usage.had_cache_read
+
+    sdk_usage = PrefixCacheUsage.from_gemini(
+        {
+            "prompt_token_count": 3000,
+            "candidates_token_count": 80,
+            "cached_content_token_count": 2048,
+        }
+    )
+    assert sdk_usage.cache_read_input_tokens == 2048

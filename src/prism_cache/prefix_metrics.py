@@ -33,6 +33,26 @@ class PrefixCacheUsage:
             cache_read_input_tokens=cached,
         )
 
+    @classmethod
+    def from_gemini(cls, usage: dict[str, Any]) -> PrefixCacheUsage:
+        """Google Gemini usageMetadata / usage_metadata (REST camelCase or SDK snake_case)."""
+        cached = int(
+            usage.get("cachedContentTokenCount")
+            or usage.get("cached_content_token_count")
+            or 0
+        )
+        return cls(
+            input_tokens=int(
+                usage.get("promptTokenCount") or usage.get("prompt_token_count") or 0
+            ),
+            output_tokens=int(
+                usage.get("candidatesTokenCount")
+                or usage.get("candidates_token_count")
+                or 0
+            ),
+            cache_read_input_tokens=cached,
+        )
+
     @property
     def had_cache_read(self) -> bool:
         return self.cache_read_input_tokens > 0

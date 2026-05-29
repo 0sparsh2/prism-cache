@@ -1,5 +1,7 @@
 """PRISM-Cache — Prompt Reuse & Inference Sharing Mesh."""
 
+from prism_cache.factory import create_pipeline
+from prism_cache.litellm_client import LiteLLMClient, load_dotenv
 from prism_cache.models import CacheContext, CacheLane, CacheTier, RetrievalHit, Sensitivity
 from prism_cache.pipeline import FaqAnswerResult, PrismConfig, PrismPipeline, RagPromptBundle
 from prism_cache.prefix_metrics import PrefixCacheUsage
@@ -13,7 +15,10 @@ __all__ = [
     "CacheContext",
     "CacheLane",
     "CacheTier",
+    "create_pipeline",
     "FaqAnswerResult",
+    "LiteLLMClient",
+    "load_dotenv",
     "PrefixCacheUsage",
     "PrismConfig",
     "PrismPipeline",
@@ -33,4 +38,4 @@ __all__ = [
     "parse_settings",
 ]
 
-__version__ = "0.3.0"
+__version__ = "0.4.0"

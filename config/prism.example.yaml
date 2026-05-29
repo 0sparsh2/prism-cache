@@ -7,10 +7,12 @@ defaults:
   lane: org-static          # user-private | team | org-static
   sensitivity: low          # low | medium | high
   embed_model_id: text-embedding-3-small
+  tier2_similarity_threshold: 0.95
 
 redis:
   url: redis://localhost:6379/0
   tier1_key_prefix: prism:t1
+  tier2_key_prefix: prism:t2
   tier3_key_prefix: prism:t3
   # Omit ttl_seconds to rely on corpus_version invalidation only
   ttl_seconds: null
@@ -24,6 +26,7 @@ routes:
     lane: org-static
     sensitivity: low
     tier1_enabled: true
+    tier2_enabled: true
   program-rag:
     lane: team
     sensitivity: medium

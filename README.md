@@ -85,27 +85,44 @@ prism-cache/
 ├── README.md
 ├── ROADMAP.md
 ├── pyproject.toml
-├── src/prism_cache/          ← library (v0.1)
+├── src/prism_cache/          ← library (v0.4)
 ├── tests/
 ├── examples/
 ├── config/prism.example.yaml
+├── gateway/                  ← LiteLLM YAML configs
 ├── docs/
 │   ├── ARCHITECTURE.md
 │   ├── BUILD.md
+│   ├── GATEWAY.md
+│   ├── LMCACHE.md
 │   └── SECURITY_REVIEW.md
 ├── research/                 ← deep-research artifacts
 └── LICENSE
 ```
 
-## Install & run (build v0.1)
+## Quick start (v0.4)
 
 ```bash
-pip install -e ".[dev]"
-pytest
-python examples/rag_demo.py
+python3.12 -m venv .venv && source .venv/bin/activate
+pip install -e ".[dev,gateway,redis]"
+cp .env.example .env   # add keys; PRISM_CHAT_MODEL=deepseek-v4-flash if Gemini quota is out
+
+make test
+make demo-tier2          # Tier 1 + 2, no API
+make redis-up && make gateway   # terminal 2: proxy on :4000
+make demo-faq-dry        # or make demo-faq when proxy + keys ready
 ```
 
-Full guide: [`docs/BUILD.md`](docs/BUILD.md)
+```python
+from prism_cache import create_pipeline, LiteLLMClient
+
+pipeline = create_pipeline(config_path="config/prism.example.yaml", use_litellm_embed=True)
+client = LiteLLMClient.from_env()
+pipeline.faq_answer("how do I reset my login password?", "internal-faq-bot",
+                    client.make_generate_fn(), user_id="bob")
+```
+
+Guides: [`docs/BUILD.md`](docs/BUILD.md) · [`docs/GATEWAY.md`](docs/GATEWAY.md) · [`CHANGELOG.md`](CHANGELOG.md)
 
 ---
 
@@ -143,13 +160,12 @@ python3 -m venv .venv && .venv/bin/pip install pyyaml
 
 ## Build phase
 
-**v0.3 shipped:** Tier 0–4 + **Tier 1 FAQ**, route rules, LiteLLM gateway config.
+**v0.4 shipped:** Tier 0–4 + **Tier 1 FAQ**, **Tier 2 semantic FAQ**, route rules, LiteLLM gateway config.
 
 Next up ([ROADMAP.md](ROADMAP.md)):
 
-1. ~~Phases A–D~~ ✅  
-2. **Phase E** — Tier 2 semantic cache (FAQ lane, gated)  
-3. **Phase F** — LMCache (optional, self-hosted)  
+1. ~~Phases A–E~~ ✅  
+2. **Phase F** — LMCache (optional, self-hosted)  
 
 Track progress in [ROADMAP.md](ROADMAP.md). Contributions welcome.
 
@@ -177,4 +193,4 @@ Research produced with a structured **deep-research** workflow ([Weizhena/Deep-R
 
 ---
 
-**PRISM-Cache v0.3** · Phases A–D shipped · Phase E next
+**PRISM-Cache v0.4** · Phases A–E shipped · Phase F next

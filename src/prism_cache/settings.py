@@ -13,6 +13,7 @@ from prism_cache.routes import RouteRegistry
 class RedisSettings:
     url: str = "redis://localhost:6379/0"
     tier1_key_prefix: str = "prism:t1"
+    tier2_key_prefix: str = "prism:t2"
     tier3_key_prefix: str = "prism:t3"
     ttl_seconds: int | None = None
 
@@ -24,6 +25,7 @@ class PrismSettings:
     default_lane: CacheLane = CacheLane.ORG_STATIC
     default_sensitivity: Sensitivity = Sensitivity.LOW
     embed_model_id: str = "text-embedding-3-small"
+    tier2_similarity_threshold: float = 0.95
     redis: RedisSettings = field(default_factory=RedisSettings)
     routes: RouteRegistry | None = None
 
@@ -34,6 +36,7 @@ class PrismSettings:
             default_lane=self.default_lane,
             default_sensitivity=self.default_sensitivity,
             embed_model_id=self.embed_model_id,
+            tier2_similarity_threshold=self.tier2_similarity_threshold,
         )
 
 
@@ -50,9 +53,13 @@ def parse_settings(data: dict[str, Any]) -> PrismSettings:
         default_lane=CacheLane(defaults.get("lane", "org-static")),
         default_sensitivity=Sensitivity(defaults.get("sensitivity", "low")),
         embed_model_id=str(defaults.get("embed_model_id") or "text-embedding-3-small"),
+        tier2_similarity_threshold=float(
+            defaults.get("tier2_similarity_threshold") or 0.95
+        ),
         redis=RedisSettings(
             url=str(redis_raw.get("url") or "redis://localhost:6379/0"),
             tier1_key_prefix=str(redis_raw.get("tier1_key_prefix") or "prism:t1"),
+            tier2_key_prefix=str(redis_raw.get("tier2_key_prefix") or "prism:t2"),
             tier3_key_prefix=str(redis_raw.get("tier3_key_prefix") or "prism:t3"),
             ttl_seconds=redis_raw.get("ttl_seconds"),
         ),

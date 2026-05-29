@@ -12,6 +12,7 @@ class RouteRule:
     sensitivity: Sensitivity = Sensitivity.LOW
     route_hint: str | None = None
     tier1_enabled: bool = True
+    tier2_enabled: bool = False
 
 
 @dataclass
@@ -39,6 +40,7 @@ class RouteRegistry:
                 sensitivity=Sensitivity(spec.get("sensitivity", "low")),
                 route_hint=str(hint) if hint else None,
                 tier1_enabled=bool(spec.get("tier1_enabled", True)),
+                tier2_enabled=bool(spec.get("tier2_enabled", False)),
             )
         default = parsed.pop("default", None)
         registry = cls(routes=parsed, default=default)
@@ -57,6 +59,7 @@ def default_routes() -> RouteRegistry:
                 "lane": "org-static",
                 "sensitivity": "low",
                 "tier1_enabled": True,
+                "tier2_enabled": True,
             },
             "program-rag": {
                 "lane": "team",

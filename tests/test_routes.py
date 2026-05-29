@@ -13,6 +13,7 @@ def test_faq_route_org_static_tier1():
     rule = default_routes().resolve("internal-faq-bot")
     assert rule.lane == CacheLane.ORG_STATIC
     assert rule.tier1_enabled is True
+    assert rule.tier2_enabled is True
 
 
 def test_from_mapping():

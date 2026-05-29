@@ -1,4 +1,4 @@
-# Build phase — PRISM-Cache v0.3
+# Build phase — PRISM-Cache v0.4
 
 ## Install
 
@@ -82,6 +82,34 @@ pipeline.faq_answer("fix my code", "coding-assistant", generate, user_id="u1")
 
 ```bash
 python examples/tier1_faq_demo.py
+python examples/tier2_faq_demo.py
+python examples/load_routes_from_config.py
+```
+
+## Tier 2 — semantic FAQ cache (Phase E)
+
+Tier 1 catches normalized exact matches. Tier 2 catches **paraphrases** on `internal-faq-bot`
+(org-static lane, low sensitivity, threshold default 0.95):
+
+```python
+pipeline = PrismPipeline(PrismConfig(org_id="acme", tier2_similarity_threshold=0.95))
+
+result = pipeline.faq_answer(
+    "how do I reset my login password?",
+    "internal-faq-bot",
+    generate=call_litellm,
+    user_id="bob",
+)
+if result.cache_tier == CacheTier.TIER2:
+    print(f"semantic hit sim={result.tier2.similarity:.2f}")
+```
+
+Pass a production embedder via `tier2_embed=` (OpenAI, etc.). Default `hash_bag_embed` is for tests/dev only.
+
+Run red-team paraphrase checks: `pytest tests/test_tier2_redteam.py`
+
+```bash
+python examples/tier1_faq_demo.py
 python examples/load_routes_from_config.py
 ```
 
@@ -100,6 +128,7 @@ litellm --config gateway/litellm.prism.yaml --port 4000
 python examples/rag_demo.py
 python examples/tier4_rag_prompt.py
 python examples/tier1_faq_demo.py
+python examples/tier2_faq_demo.py
 python examples/tier3_load_test.py --users 50 --queries 5
 ```
 
