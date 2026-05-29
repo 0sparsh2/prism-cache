@@ -2,13 +2,16 @@
 
 **prism-cache** — *Prompt Reuse & Inference Sharing Mesh* for the enterprise.
 
-Policy-aware, multi-tier LLM caching: reuse prompts, retrieval, and inference **across users** (chat, RAG, coding tools) without treating compliance as an afterthought.
+Policy-aware, multi-tier **organizational inference reuse** (governance-first, retrieval-led — not a semantic answer cache).
+
+Reuse prompts, retrieval, and inference **across users** (chat, RAG, coding tools) without treating compliance as an afterthought.
 
 > Per-user KV cache saves one person’s next turn. **PRISM** saves the *next employee* asking the same thing — when it is safe to share.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Research](https://img.shields.io/badge/docs-research%20report-green)](research/report.md)
 [![Roadmap](https://img.shields.io/badge/status-build%20phase-orange)](ROADMAP.md)
+[![Benchmarks](https://img.shields.io/badge/eval-governance%20proof-blue)](docs/BENCHMARKS.md)
 
 ---
 
@@ -87,6 +90,7 @@ prism-cache/
 ├── pyproject.toml
 ├── src/prism_cache/          ← library (v0.4)
 ├── tests/
+├── eval/                     ← governance + retrieval benchmarks
 ├── examples/
 ├── config/prism.example.yaml
 ├── gateway/                  ← LiteLLM YAML configs
@@ -94,32 +98,48 @@ prism-cache/
 │   ├── ARCHITECTURE.md
 │   ├── BUILD.md
 │   ├── GATEWAY.md
+│   ├── BENCHMARKS.md
 │   ├── LMCACHE.md
 │   └── SECURITY_REVIEW.md
 ├── research/                 ← deep-research artifacts
 └── LICENSE
 ```
 
-## Quick start (v0.4)
+## Quick start (library + eval)
 
 ```bash
 python3.12 -m venv .venv && source .venv/bin/activate
 pip install -e ".[dev,gateway,redis]"
-cp .env.example .env   # add keys; PRISM_CHAT_MODEL=deepseek-v4-flash if Gemini quota is out
+cp .env.example .env   # add keys; REDIS_URL + PRISM_CHAT_MODEL for live demos
 
-make test
-make demo-tier2          # Tier 1 + 2, no API
-make redis-up && make gateway   # terminal 2: proxy on :4000
-make demo-faq-dry        # or make demo-faq when proxy + keys ready
+make test              # 50 tests including governance eval gate
+make eval              # Tier 3 equivalence, lane isolation, Tier 2 near-intent FPR
+make run-all           # test + eval + offline/live demos (Redis + gateway if up)
 ```
 
-```python
-from prism_cache import create_pipeline, LiteLLMClient
+**Hero path — Tier 3 RAG reuse across users:**
 
-pipeline = create_pipeline(config_path="config/prism.example.yaml", use_litellm_embed=True)
-client = LiteLLMClient.from_env()
-pipeline.faq_answer("how do I reset my login password?", "internal-faq-bot",
-                    client.make_generate_fn(), user_id="bob")
+```python
+from prism_cache import create_pipeline
+
+pipeline = create_pipeline(config_path="config/prism.example.yaml")
+
+def retriever(query, *, top_k, filters):
+    return search_vector_db(query, top_k=top_k)
+
+# User alice (miss → stores chunk IDs under lane + corpus_version)
+pipeline.rag_retrieve("what is the expense policy for meals?", retriever, user_id="alice")
+
+# User bob (hit → skips vector DB, same governed chunk set)
+pipeline.rag_retrieve("What is the EXPENSE policy for meals?", retriever, user_id="bob")
+```
+
+Proof tables: [`docs/BENCHMARKS.md`](docs/BENCHMARKS.md) · Optional FAQ accelerator (Tier 1/2): `make demo-tier2`
+
+```bash
+make prod-redis && make gateway   # terminal 2: Redis + LiteLLM :4000
+make demo-production-live
+make demo-rag
 ```
 
 Guides: [`docs/BUILD.md`](docs/BUILD.md) · [`docs/GATEWAY.md`](docs/GATEWAY.md) · [`docs/OPERATIONS.md`](docs/OPERATIONS.md) · [`CHANGELOG.md`](CHANGELOG.md)
@@ -193,4 +213,4 @@ Research produced with a structured **deep-research** workflow ([Weizhena/Deep-R
 
 ---
 
-**PRISM-Cache v0.5** · Phases A–F (API + LMCache scaffold) · [Production](docs/PRODUCTION.md)
+**PRISM-Cache v0.5.1** · Phases A–F · [Production](docs/PRODUCTION.md) · [Benchmarks](docs/BENCHMARKS.md)

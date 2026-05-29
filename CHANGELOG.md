@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.5.1] — 2026-05-29
+
+### Added
+
+- **`eval/`** governance benchmarks: Tier 3 retrieval equivalence, lane isolation, policy denials, Tier 2 near-intent FPR
+- `make eval`, `make run-all`, `make demo-production-live`; `docs/BENCHMARKS.md`
+- CI gate: `tests/test_benchmarks.py` (50 tests)
+
+### Changed
+
+- README repositioned: Tier 3 hero path, eval badge, governance-first positioning
+- `.env.example`: default `REDIS_URL` for production demos
+
 ## [0.5.0] — 2026-05-29
 
 ### Added

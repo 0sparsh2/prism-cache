@@ -31,7 +31,7 @@ Use this checklist before enabling **shared cache writes** for a new route or la
 
 - [ ] Approved only for FAQ / low sensitivity.
 - [ ] Similarity threshold ≥ 0.95 documented.
-- [ ] Red-team paraphrase set run; false positive rate acceptable.
+- [ ] Red-team paraphrase set run; false positive rate acceptable. → `make eval` ([BENCHMARKS.md](BENCHMARKS.md))
 
 ### Tier 1 (exact)
 

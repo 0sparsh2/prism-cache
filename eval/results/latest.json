@@ -1,0 +1,54 @@
+{
+  "generated_at": "2026-05-29T20:55:49.743868+00:00",
+  "rows": [
+    {
+      "name": "tier3_retrieval_equivalence",
+      "metric": "precision",
+      "value": 1.0,
+      "target": "= 1.0",
+      "passed": true,
+      "notes": "3/3 paraphrase pairs matched chunk sets"
+    },
+    {
+      "name": "cross_user_tier3",
+      "metric": "hit_rate",
+      "value": 0.98,
+      "target": "> 0.9",
+      "passed": true,
+      "notes": "vector_calls=10 (expect 10) over 50 users \u00d7 10 queries"
+    },
+    {
+      "name": "lane_isolation",
+      "metric": "cross_lane_leak_rate",
+      "value": 0.0,
+      "target": "= 0.0",
+      "passed": true,
+      "notes": "user-private retrieval must not appear in org-static lookup"
+    },
+    {
+      "name": "policy_governance",
+      "metric": "denial_accuracy",
+      "value": 1.0,
+      "target": "= 1.0",
+      "passed": true,
+      "notes": "2/2 expected denials"
+    },
+    {
+      "name": "tier2_near_intent",
+      "metric": "false_positive_rate",
+      "value": 0.0,
+      "target": "= 0.0",
+      "passed": true,
+      "notes": "0/6 adversarial pairs hit at threshold=0.95"
+    },
+    {
+      "name": "tier3_near_intent_overlap",
+      "metric": "chunk_overlap_rate",
+      "value": 1.0,
+      "target": "report only",
+      "passed": true,
+      "notes": "Informational \u2014 documents synthesis risk when intents differ but chunks overlap"
+    }
+  ],
+  "passed": true
+}
