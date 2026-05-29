@@ -114,7 +114,7 @@ python3.12 -m venv .venv && source .venv/bin/activate
 pip install -e ".[dev,gateway,redis]"
 cp .env.example .env   # add keys; REDIS_URL + PRISM_CHAT_MODEL for live demos
 
-make test              # 51 tests including governance eval gate
+make test              # 52 tests including governance eval gate
 make eval              # Tier 3 equivalence, lane isolation, Tier 2 near-intent FPR
 make run-all           # test + eval + offline/live demos (Redis + gateway if up)
 ```
