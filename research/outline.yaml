@@ -1,0 +1,96 @@
+topic: "Distributed prompt caching for enterprise LLM/RAG workloads (2025–2026)"
+
+items:
+  - name: Problem and opportunity
+    category: Landscape
+    description: >
+      One org, thousands of users (chatbots, coding assistants, doc/RAG search) repeating
+      the same or similar prompts across people; per-user/session KV cache does not help
+      the next employee. Need cross-user reuse with compliance and zero PII leakage.
+
+  - name: Cross-user shared cache safety model
+    category: Governance
+    description: >
+      When answers may be shared org-wide vs per-team vs never; cache key design,
+      redaction, tenancy, audit, and what must stay user-private (coding context, HR, etc.).
+
+  - name: Multi-tier reference architecture
+    category: Architecture
+    description: >
+      Claude-proposed stack (normalization → exact → semantic → retrieval → provider KV);
+      how tiers compose, invalidate, and write back.
+
+  - name: Tier 0 query normalization
+    category: Architecture
+    description: >
+      Deterministic keys, hashing, embedding order, pitfalls (locale, PII, attachments).
+
+  - name: Tier 1 exact hash cache
+    category: Architecture
+    description: >
+      Redis/exact-match patterns, TTL vs version tags, org-wide key namespaces.
+
+  - name: Tier 2 semantic response cache
+    category: Architecture
+    description: >
+      Vector similarity caches, thresholds, false positives, verified caches (vCache).
+
+  - name: Tier 3 RAG retrieval cache
+    category: Architecture
+    description: >
+      Caching embeddings + chunk IDs + filters; doc-corpus versioning; overlap with chunk-KV research.
+
+  - name: Tier 4 provider prefix KV cache
+    category: Architecture
+    description: >
+      Anthropic/OpenAI/Google prompt caching; prefix structure for RAG; limits and billing.
+
+  - name: GPTCache
+    category: Products and OSS
+    description: >
+      Zilliz library-level semantic cache; modules, backends, LangChain integration.
+
+  - name: LiteLLM proxy caching
+    category: Products and OSS
+    description: >
+      Gateway exact + redis-semantic + qdrant-semantic; Redis Stack requirements.
+
+  - name: Portkey AI gateway
+    category: Products and OSS
+    description: >
+      Enterprise simple + semantic cache, observability, threshold philosophy.
+
+  - name: Redis LangCache and langchain-redis
+    category: Products and OSS
+    description: >
+      RedisSemanticCache, managed LangCache, org-distributed cache backing.
+
+  - name: LMCache and distributed KV reuse
+    category: Products and OSS
+    description: >
+      Cross-node KV, PD disaggregation, Momento integration; inference-layer caching.
+
+  - name: RAG chunk KV research
+    category: Research
+    description: >
+      TurboRAG, CacheBlend, Cache-Craft, CacheClip, KVLink, SmartCache, RAGCache.
+
+  - name: Carbon and sustainability
+    category: Impact
+    description: >
+      Operational vs embodied carbon (GreenCache); when caching helps the environment.
+
+  - name: Enterprise governance and risks
+    category: Governance
+    description: >
+      Staleness, compliance, PII in shared cache, audit logs, multi-tenant isolation.
+
+  - name: Build vs buy and rollout priority
+    category: Strategy
+    description: >
+      Does a unified "distributed prompt cache" product exist; recommended ship order for RAG platforms.
+
+execution:
+  batch_size: 4
+  items_per_agent: 1
+  output_dir: "./results"

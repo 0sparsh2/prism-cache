@@ -1,0 +1,27 @@
+{
+  "name": "GPTCache",
+  "category": "Products and OSS",
+  "official_url": "https://github.com/zilliztech/gptcache",
+  "already_exists": "full_product",
+  "existence_evidence": "Open-source Zilliz project; LangChain/LlamaIndex integrations; pluggable embedders, vector stores (Milvus, FAISS, Redis, Qdrant), SQLite/Postgres response store. Active ecosystem though maintenance varies.",
+  "gap_vs_vision": "Library per app—not org gateway with IAM lanes. Teams must implement cross-user policy themselves.",
+  "summary": "Python semantic cache framework: embed query, similarity search, return stored LLM response on match.",
+  "how_it_works": "Modular: embedding function, vector store, similarity evaluator, cache storage, optional pre/post processors. Configurable threshold and eviction.",
+  "integration_points": "Application code or LangChain set_llm_cache; can back with Qdrant matching org stack.",
+  "correctness_risks": "DIY thresholds; no built-in corpus versioning or clearance; false positive rate team-owned.",
+  "cost_latency_impact": "Documented 2-10x faster on hits vs OpenAI round-trip in project materials; depends on embed model choice.",
+  "environmental_impact": "Reduces API calls on hits.",
+  "cross_user_sharing": "same_tenant_only — unless app wraps with org key schema",
+  "pii_and_compliance_controls": "Not built-in; must wrap writes with scrubbing and lane keys.",
+  "org_scale_patterns": "Multiple services each running GPTCache → fragmented; prefer gateway unless RAG-specific Tier 3 logic here.",
+  "rollout_priority": "Optional for RAG service Tier 2 prototype",
+  "makes_sense_verdict": "yes_with_caveats",
+  "makes_sense_rationale": "Good for controlled pilots; not sufficient alone for enterprise-wide compliance story.",
+  "primary_sources": [
+    {
+      "title": "GPTCache GitHub",
+      "url": "https://github.com/zilliztech/gptcache"
+    }
+  ],
+  "uncertain": []
+}

@@ -1,0 +1,31 @@
+{
+  "name": "LMCache and distributed KV reuse",
+  "category": "Products and OSS",
+  "official_url": "https://arxiv.org/pdf/2510.09665",
+  "already_exists": "full_product",
+  "existence_evidence": "LMCache OSS widely adopted for enterprise KV layer; CPU offload, hierarchical storage, PD disaggregation; Momento integration reports >50% TTFT reduction on cold start with distributed cache. Complements vLLM/SGLang.",
+  "gap_vs_vision": "Inference-layer KV reuse across requests/nodes—not semantic cross-user answer cache. Helps when prefix identical (including shared RAG context), not paraphrased queries.",
+  "summary": "Treats KV cache as first-class reusable object across machines and storage tiers for self-hosted LLMs.",
+  "how_it_works": "Store/move KV blocks; prefix matching; integrate with paged attention engines; optional remote storage (S3 tiering with Momento MAX).",
+  "integration_points": "vLLM, SGLang, on-prem GPU clusters; not Claude API unless hybrid architecture.",
+  "correctness_risks": "Chunk ordering and cross-attention issues similar to CacheBlend research when naively concatenating KVs.",
+  "cost_latency_impact": "Significant throughput and TTFT gains in cited deployments; storage and network costs.",
+  "environmental_impact": "GreenCache paper: KV storage has embodied carbon; net benefit when hit rate high and CI high.",
+  "cross_user_sharing": "org_wide_static_only — when different users share exact same context bytes",
+  "pii_and_compliance_controls": "KV blocks may contain attention state derived from private text—treat shared KV as sensitive as source prefix; isolate by tenant on GPU cluster.",
+  "org_scale_patterns": "Platform team running internal model serving; pairs with Tier 4 prompt design.",
+  "rollout_priority": "If self-hosting LLMs; parallel to API prompt caching",
+  "makes_sense_verdict": "yes_with_caveats",
+  "makes_sense_rationale": "Essential for on-prem inference scale; orthogonal to semantic org cache for API-only shops.",
+  "primary_sources": [
+    {
+      "title": "LMCache arXiv",
+      "url": "https://arxiv.org/pdf/2510.09665"
+    },
+    {
+      "title": "Momento LMCache blog",
+      "url": "https://www.gomomento.com/blog/reduce-ttft-by-50-with-lmcache-momento/"
+    }
+  ],
+  "uncertain": []
+}

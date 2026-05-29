@@ -1,0 +1,32 @@
+{
+  "name": "Build vs buy and rollout priority",
+  "category": "Strategy",
+  "already_exists": "partial_fragment",
+  "existence_evidence": "Buy: Portkey/LiteLLM gateway caches, Redis LangCache. Build: Tier 3 retrieval keys, lane policy, normalization. No unified 'distributed prompt cache' SKU found in 2025-2026 market scan.",
+  "gap_vs_vision": "The product is integration + policy + Tier 3, not a new algorithm.",
+  "summary": "Recommended sequence for enterprise RAG with thousands of users and compliance needs.",
+  "how_it_works": "Phase 0: lanes + DLP. Phase 1 (wk1-2): Tier 3 retrieval cache + metrics. Phase 2 (wk3-4): Tier 4 prompt structure + provider cache_control. Phase 3 (mo2): Tier 1 exact FAQ via gateway Redis. Phase 4 (mo3+): Tier 2 semantic on faq lane only. Self-host: add LMCache if internal models.",
+  "integration_points": "LiteLLM or Portkey + Qdrant + Redis + corpus version service.",
+  "correctness_risks": "Skipping phases and enabling org-wide semantic first.",
+  "cost_latency_impact": "Early phases capture majority of low-risk savings.",
+  "environmental_impact": "Tracks cost phase—report after Phase 1.",
+  "cross_user_sharing": "org_wide_with_guards — phased widen lanes as proven",
+  "pii_and_compliance_controls": "Gate each phase on security sign-off for cross-user writes.",
+  "org_scale_patterns": "Central platform team owns schema; product teams consume via gateway.",
+  "rollout_priority": "See how_it_works phases",
+  "makes_sense_verdict": "strong_yes",
+  "makes_sense_rationale": "Build-vs-buy split is clear; buy gateway+Redis, build Tier3+policy.",
+  "primary_sources": [
+    {
+      "title": "LiteLLM caching",
+      "url": "https://docs.litellm.ai/docs/proxy/caching"
+    },
+    {
+      "title": "Tool discovery synthesis (internal Phase 1)",
+      "url": "https://github.com/zilliztech/gptcache"
+    }
+  ],
+  "uncertain": [
+    "official_url"
+  ]
+}

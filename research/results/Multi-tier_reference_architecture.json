@@ -1,0 +1,32 @@
+{
+  "name": "Multi-tier reference architecture",
+  "category": "Architecture",
+  "already_exists": "partial_fragment",
+  "existence_evidence": "Each tier has independent products (Redis, Qdrant, GPTCache, LMCache, provider APIs). Introl and ZeroEntropy document multi-tier prefix+semantic patterns in 2025. No single vendor bundles all five tiers with unified invalidation.",
+  "gap_vs_vision": "Unified write-back to all tiers async, single doc_corpus_version invalidating T1-T3 together, and cross-tool gateway enforcement.",
+  "summary": "Composable pipeline: Tier 0 normalize → T1 exact → T2 semantic answer → T3 retrieval → T4 prefix KV → LLM; async populate allowed tiers on miss.",
+  "how_it_works": "Request flows cheapest-first. Misses fall through. Response worker writes to tiers permitted by classification. Invalidation: model change busts all; corpus_version busts T1-T3; prefix break busts T4 only.",
+  "integration_points": "Ingress gateway, RAG service, vector DB, Redis, inference engine, message queue for write-back and audit.",
+  "correctness_risks": "Tier ordering wrong (semantic before retrieval) wastes money. Writing personal answers to org lane.",
+  "cost_latency_impact": "Stacking tiers compounds hit probability; T3+T4 often dominate RAG savings with lower risk than T2 alone.",
+  "environmental_impact": "Multi-tier maximizes compute avoidance per request.",
+  "cross_user_sharing": "org_wide_with_guards — per-tier policy",
+  "pii_and_compliance_controls": "Per-tier write matrix: T3 org-wide ok with version keys; T2 requires scrub+lane; T4 only if prefix has no user-specific bytes.",
+  "org_scale_patterns": "One architecture diagram, many deployables; shared observability dashboard for hit rate by tier and lane.",
+  "rollout_priority": "Design all tiers; ship T3+T4 first, then T1, then T2",
+  "makes_sense_verdict": "strong_yes",
+  "makes_sense_rationale": "Matches industry direction and user clarification; integration is the product.",
+  "primary_sources": [
+    {
+      "title": "Prompt caching infrastructure guide",
+      "url": "https://introl.com/blog/prompt-caching-infrastructure-llm-cost-latency-reduction-guide-2025"
+    },
+    {
+      "title": "ZeroEntropy prompt caching concepts",
+      "url": "https://zeroentropy.dev/concepts/prompt-caching/"
+    }
+  ],
+  "uncertain": [
+    "official_url"
+  ]
+}

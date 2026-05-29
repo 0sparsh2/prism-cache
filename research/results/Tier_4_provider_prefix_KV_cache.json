@@ -1,0 +1,31 @@
+{
+  "name": "Tier 4 provider prefix KV cache",
+  "category": "Architecture",
+  "official_url": "https://github.com/anthropics/skills/blob/main/skills/claude-api/shared/prompt-caching.md",
+  "already_exists": "full_product",
+  "existence_evidence": "Anthropic cache_control ephemeral (5m TTL, 1h option); OpenAI and Google analogous features. LMCache for self-hosted cross-request KV. Requires byte-identical prefix; min token thresholds (e.g. 1024 Sonnet).",
+  "gap_vs_vision": "Cross-user only when many users share identical assembled prefix (same system + same retrieved bundle). Org must standardize prompt assembly across tools.",
+  "summary": "Provider or inference engine reuses KV states for identical leading tokens; user query must be suffix; structure [system][retrieved context][user query].",
+  "how_it_works": "Mark cache_control on last block of shared prefix. cache_read_input_tokens billed ~10% of input. Writes cost premium (~125%). Breakpoints (up to 4 on Anthropic) for layered invalidation. Model switch invalidates.",
+  "integration_points": "API client libraries; prompt templates in RAG; vLLM+LMCache for on-prem.",
+  "correctness_risks": "Single byte change invalidates prefix. Timestamps in system prompt kill hits. User-specific text before shared context prevents cross-user benefit.",
+  "cost_latency_impact": "25-35% total cost reduction possible when large prefix reused (production reports); 80-90% on cached input token portion. Latency drops on prefill skip.",
+  "environmental_impact": "Major GPU/API energy reduction on cache reads.",
+  "cross_user_sharing": "org_wide_static_only — when prefix identical for all users in cohort",
+  "pii_and_compliance_controls": "Never put PII in cached prefix; user message after breakpoint; audit cache_read tokens per request.",
+  "org_scale_patterns": "Shared prompt templates; retrieved bundle hash in observability; warm cache for popular doc clusters.",
+  "rollout_priority": "Week 3–4 — prompt audit and cache_control markers",
+  "makes_sense_verdict": "strong_yes",
+  "makes_sense_rationale": "Free/low-integration win for API users; complements but does not replace cross-user semantic/retrieval tiers.",
+  "primary_sources": [
+    {
+      "title": "Anthropic prompt caching skill",
+      "url": "https://github.com/anthropics/skills/blob/main/skills/claude-api/shared/prompt-caching.md"
+    },
+    {
+      "title": "LMCache paper",
+      "url": "https://arxiv.org/pdf/2510.09665"
+    }
+  ],
+  "uncertain": []
+}

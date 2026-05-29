@@ -1,0 +1,29 @@
+{
+  "name": "Tier 0 query normalization",
+  "category": "Architecture",
+  "already_exists": "partial_fragment",
+  "existence_evidence": "Exact caches implicitly normalize in some gateways; GPTCache and blogs recommend normalization for hit rate. DLP/NER scrubbing is enterprise-standard but not part of cache libraries by default.",
+  "gap_vs_vision": "Coupled normalize+classify+route-to-lane as mandatory pre-cache step for cross-user keys.",
+  "summary": "Pre-cache hygiene: lowercase, whitespace, punctuation rules, optional stemming; SHA-256 for Tier 1; embedding for Tier 2/3 after scrub.",
+  "how_it_works": "Pipeline: raw query → locale rules → PII detect/redact → optional attachment strip → hash string + embed vector. Order: hash check before embed to save embedding cost on exact hits.",
+  "integration_points": "First hop in gateway or RAG API; shared library for all internal AI tools.",
+  "correctness_risks": "Over-aggressive normalization merges distinct intents; under-normalization splits hits. Redaction alters meaning for legal queries.",
+  "cost_latency_impact": "Hash nearly free; embedding costs tokens/API—defer until T1 miss. Scrub adds 10-50ms depending on DLP.",
+  "environmental_impact": "Minimal direct impact; enables higher hit rates.",
+  "cross_user_sharing": "org_wide_with_guards — output of Tier 0 feeds only approved lanes",
+  "pii_and_compliance_controls": "Block or downgrade to user-private lane when PII detectors fire; never org-cache raw prompts with emails/SSN/names.",
+  "org_scale_patterns": "Single normalization spec versioned (norm_v3) included in cache keys.",
+  "rollout_priority": "Week 1 — prerequisite for safe T1 and cross-user keys",
+  "makes_sense_verdict": "strong_yes",
+  "makes_sense_rationale": "Cheap, mandatory for cross-user exact cache and compliance.",
+  "primary_sources": [
+    {
+      "title": "GPTCache semantic cache design",
+      "url": "https://github.com/zilliztech/gptcache"
+    }
+  ],
+  "uncertain": [
+    "official_url",
+    "environmental_impact"
+  ]
+}

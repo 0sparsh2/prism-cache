@@ -1,0 +1,34 @@
+{
+  "name": "Problem and opportunity",
+  "category": "Landscape",
+  "already_exists": "partial_fragment",
+  "existence_evidence": "Per-user/session KV and provider prefix caching are production features (Anthropic prompt caching, vLLM/LMCache). Org-wide semantic and retrieval caches exist as gateway features (Portkey, LiteLLM) and libraries (GPTCache) but not as a unified compliance-aware cross-user product. Enterprises report 40-80% potential cost reduction from semantic caching in repetitive workloads (industry blogs and Percona benchmarks).",
+  "gap_vs_vision": "The vision is thousands of employees across chatbots, coding tools, and doc search reusing safe work across users. Today most caching is per-session, per-app, or ungoverned shared Redis. Missing: central policy lanes, clearance-tier keys, coordinated invalidation on doc version, and audit proving User B never received User A's PII.",
+  "summary": "Large organizations pay repeatedly for the same LLM work: similar questions, same handbook chunks, identical system prompts. Single-user KV cache only helps the same person on the next turn with an identical prefix. Cross-user reuse requires deliberate cache classes and governance, not flipping one semantic-cache switch.",
+  "how_it_works": "Workload pattern: high duplicate intent, low duplicate bytes. Employees paraphrase FAQs, policy, and engineering docs. Without org cache: every user triggers full embed-retrieve-generate. With org cache: shared tiers (retrieval, exact FAQ, guarded semantic) keyed by corpus version and sensitivity tier.",
+  "integration_points": "Sits above all AI surfaces: API gateway (LiteLLM/Portkey), RAG services (Qdrant), identity/clearance from IAM, DLP on ingress, async write-back workers, observability for hit rate and leakage incidents.",
+  "correctness_risks": "Treating org cache as one global bucket causes wrong answers and regulatory breach. Under-caching leaves money and carbon on the table.",
+  "cost_latency_impact": "Industry reports: semantic hits can be 250x faster than full LLM calls; 40-80% cost reduction possible on repetitive traffic at 60% hit rates (vendor/anecdotal—varies by workload). Cross-user retrieval cache often yields large savings with lower risk than answer cache.",
+  "environmental_impact": "Fewer tokens and GPU cycles reduce operational carbon; shared caching amplifies savings vs per-user-only reuse.",
+  "cross_user_sharing": "org_wide_with_guards — only via tiered lanes; never one undifferentiated pool",
+  "pii_and_compliance_controls": "Mandatory: partition by org_id + sensitivity + corpus_version; scrub before hash/embed; block high-PII prompts from shared lanes; audit hits without logging raw PII.",
+  "org_scale_patterns": "Single logical cache plane, many physical namespaces (faq, team-project, user-private). All tools route through gateway or shared SDK enforcing same key schema.",
+  "rollout_priority": "Foundation: define lanes and metrics before enabling cross-user writes",
+  "makes_sense_verdict": "strong_yes",
+  "makes_sense_rationale": "Problem is real, measurable, and aligned with cost/ESG goals. Exists as fragments; integrator opportunity is compliance-safe cross-user reuse.",
+  "primary_sources": [
+    {
+      "title": "Anthropic prompt caching overview",
+      "url": "https://github.com/anthropics/skills/blob/main/skills/claude-api/shared/prompt-caching.md"
+    },
+    {
+      "title": "Percona semantic caching benchmarks",
+      "url": "https://www.percona.com/blog/semantic-caching-for-llm-apps-reduce-costs-by-40-80-and-speed-up-by-250x/"
+    },
+    {
+      "title": "LMCache enterprise KV layer",
+      "url": "https://arxiv.org/pdf/2510.09665"
+    }
+  ],
+  "uncertain": []
+}

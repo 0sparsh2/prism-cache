@@ -1,0 +1,32 @@
+{
+  "name": "Tier 3 RAG retrieval cache",
+  "category": "Architecture",
+  "already_exists": "partial_fragment",
+  "existence_evidence": "DIY pattern documented in RAG blogs; not a named feature in most gateways. Research: TurboRAG, CacheBlend, Cache-Craft precompute/reuse chunk KV and retrieval state. LMCache ecosystem for KV reuse adjacent to retrieval.",
+  "gap_vs_vision": "First-class product feature: hash(embed_bytes + filter + top_k + corpus_version + clearance) → chunk_ids with gateway integration and cross-user defaults on.",
+  "summary": "Cache the expensive retrieval step—embedding query, vector search, top-K chunk IDs/scores—not necessarily the final natural language answer.",
+  "how_it_works": "Key includes query embedding fingerprint (or hash of normalized text used for embed), retrieval filters, k, corpus_version, clearance. Value: chunk_ids, scores, optional chunk text hashes. On hit: skip Qdrant ANN; assemble prompt; still run generation (allows per-user question suffix). Invalidate when corpus_version changes.",
+  "integration_points": "RAG service between embed and LLM; Redis for hot keys; ties to document CMS version API.",
+  "correctness_risks": "Lower than T2—users get fresh answers from same evidence. Wrong chunks if embed similar but intent differs—mitigate with stricter key or re-rank on hit.",
+  "cost_latency_impact": "Eliminates duplicate ANN and chunk fetch for N analysts on same contract section—often large in enterprise RAG. Embedding still needed unless query text hash hits.",
+  "environmental_impact": "Reduces embed API calls and vector DB load; generation still runs.",
+  "cross_user_sharing": "org_wide_with_guards — best cross-user tier when keyed by corpus+clearance not user",
+  "pii_and_compliance_controls": "Do not store user text in key; clearance in key; retrieval filters enforce ABAC; no chunk from restricted docs in shared entry.",
+  "org_scale_patterns": "Shared Redis layer in front of Qdrant for all RAG apps; metrics on retrieval hit rate.",
+  "rollout_priority": "Week 1–2 — highest priority per architecture review",
+  "makes_sense_verdict": "strong_yes",
+  "makes_sense_rationale": "Core fit for thousands of users searching same docs; safest major cross-user win.",
+  "primary_sources": [
+    {
+      "title": "TurboRAG EMNLP 2025",
+      "url": "https://aclanthology.org/anthology-files/anthology-files/pdf/emnlp/2025.emnlp-main.334.pdf"
+    },
+    {
+      "title": "Cache-Craft SIGMOD 2025",
+      "url": "https://skejriwal44.github.io/docs/CacheCraft_SIGMOD_2025.pdf"
+    }
+  ],
+  "uncertain": [
+    "official_url"
+  ]
+}

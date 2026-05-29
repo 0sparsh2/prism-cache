@@ -1,0 +1,31 @@
+{
+  "name": "Tier 1 exact hash cache",
+  "category": "Architecture",
+  "official_url": "https://redis.io/docs/latest/develop/ai/redisvl/user_guide/langcache_semantic_cache/",
+  "already_exists": "full_product",
+  "existence_evidence": "Redis, Portkey simple cache, LiteLLM redis cache, LangChain RedisCache—all production. Sub-millisecond GET latency typical.",
+  "gap_vs_vision": "Org namespaces with clearance and corpus_version in key; central FAQ allowlist; no raw-user-keyed entries in org pool.",
+  "summary": "Key = hash(normalized_query + lane + corpus_version + model_id); value = response metadata and text; TTL or version-based expiry.",
+  "how_it_works": "SHA-256 or similar on normalized string. Redis GET; on miss continue pipeline. Invalidate on corpus_version or model bump. Hit counter for analytics.",
+  "integration_points": "Redis/Valkey cluster shared by gateway; optional per-region replicas.",
+  "correctness_risks": "Low for exact match if normalization stable. Stale FAQ if version tag omitted.",
+  "cost_latency_impact": "~100µs–2ms latency; saves full LLM cost on hit. Hit rates highest on IT/HR FAQs (10-40% of traffic in repetitive orgs—estimate, workload-dependent).",
+  "environmental_impact": "High savings per hit—no GPU for cached answer.",
+  "cross_user_sharing": "org_wide_static_only — for scrubbed FAQ lane; else same_tenant_only",
+  "pii_and_compliance_controls": "Only cache if post-Tier-0 classification allows org:faq lane; key must not include user id.",
+  "org_scale_patterns": "Redis cluster with key prefix org:{id}:lane:faq:v{corpus}:sha256(...)",
+  "rollout_priority": "Month 2 — after log analysis identifies top exact repeats",
+  "makes_sense_verdict": "yes_with_caveats",
+  "makes_sense_rationale": "Easy win for FAQ traffic cross-user; limited value for paraphrased enterprise questions without Tier 2/3.",
+  "primary_sources": [
+    {
+      "title": "Portkey simple cache docs",
+      "url": "https://docs.portkey.ai/docs/product/ai-gateway/cache-simple-and-semantic"
+    },
+    {
+      "title": "LangChain Redis cache",
+      "url": "https://docs.langchain.com/oss/python/integrations/caches/redis_llm_caching"
+    }
+  ],
+  "uncertain": []
+}

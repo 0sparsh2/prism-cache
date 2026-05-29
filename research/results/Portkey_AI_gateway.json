@@ -1,0 +1,31 @@
+{
+  "name": "Portkey AI gateway",
+  "category": "Products and OSS",
+  "official_url": "https://docs.portkey.ai/docs/product/ai-gateway/cache-simple-and-semantic",
+  "already_exists": "full_product",
+  "existence_evidence": "Simple cache all plans; semantic enterprise with Milvus/Pinecone; SEMANTIC_CACHE_SIMILARITY_THRESHOLD default 0.95; analytics on hit rate and cost savings; customer claims of $500K+ savings at scale.",
+  "gap_vs_vision": "Semantic cache enterprise-only; no retrieval-tier; cross-user compliance is customer-configured not opinionated lanes.",
+  "summary": "Managed/self-hosted AI gateway with exact and semantic caching plus observability and guardrails.",
+  "how_it_works": "Per-request cache mode simple|semantic; env vars for embed provider and vector DB; internal threshold tuning marketed at 99% accuracy on validated traffic.",
+  "integration_points": "Drop-in OpenAI-compatible endpoint; virtual keys; audit logs.",
+  "correctness_risks": "Opaque threshold—less control than vCache DIY; vendor lock-in for semantic plane.",
+  "cost_latency_impact": "Strong for teams wanting managed ops; semantic needs vector DB cost.",
+  "environmental_impact": "Indirect via reduced LLM calls.",
+  "cross_user_sharing": "org_wide_with_guards — shared gateway cache pool per deployment",
+  "pii_and_compliance_controls": "Guardrails PII filters exist; must configure not to semantic-cache sensitive routes.",
+  "org_scale_patterns": "SOC2/HIPAA options; good for regulated buyers preferring vendor ops.",
+  "rollout_priority": "Alternative to LiteLLM if budget for enterprise",
+  "makes_sense_verdict": "yes_with_caveats",
+  "makes_sense_rationale": "Strong buy path if self-hosting Redis Stack is undesirable; still need Tier 3 in RAG.",
+  "primary_sources": [
+    {
+      "title": "Portkey cache docs",
+      "url": "https://docs.portkey.ai/docs/product/ai-gateway/cache-simple-and-semantic"
+    },
+    {
+      "title": "Portkey semantic thresholds blog",
+      "url": "https://portkey.ai/blog/semantic-caching-thresholds/"
+    }
+  ],
+  "uncertain": []
+}

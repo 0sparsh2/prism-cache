@@ -1,0 +1,35 @@
+{
+  "name": "Tier 2 semantic response cache",
+  "category": "Architecture",
+  "official_url": "https://arxiv.org/abs/2502.03771",
+  "already_exists": "partial_fragment",
+  "existence_evidence": "GPTCache, Portkey semantic (enterprise), LiteLLM redis-semantic/qdrant-semantic, Redis LangCache. vCache adds per-entry thresholds and error bounds (research/productionizing). Portkey cites ~0.95 similarity and 99% accuracy targets on large traffic.",
+  "gap_vs_vision": "Cross-user answer store with lane policy, vCache-style guarantees, and prohibition on open-ended HR/legal/coding lanes org-wide.",
+  "summary": "Store query embedding + full model response; ANN lookup; return if similarity > threshold (often 0.95-0.97 for enterprise).",
+  "how_it_works": "On miss: generate answer, async embed query, upsert vector DB with metadata (lane, corpus_version, model). On hit: return cached response if similarity and policy checks pass. Staleness: reject if doc_corpus_version mismatch.",
+  "integration_points": "Qdrant/Milvus/Pinecone/Redis vector; embedding API; gateway or GPTCache in app.",
+  "correctness_risks": "False positives—wrong answer confidently. Static global thresholds suboptimal (vCache paper). Cross-user leakage if personal context embedded in cached query.",
+  "cost_latency_impact": "Embedding cost on miss (~23ms cited in benchmarks) vs seconds for LLM. Hit saves output tokens and latency. Threshold too low increases errors; too low hit rate.",
+  "environmental_impact": "Strong operational savings when hits are safe and frequent.",
+  "cross_user_sharing": "org_wide_with_guards — FAQ lane only by default; user-private otherwise",
+  "pii_and_compliance_controls": "Never org-cache raw prompts; scrub before embed; optional secondary verifier on hits; separate indexes per sensitivity tier.",
+  "org_scale_patterns": "Gateway-enforced semantic mode per route; coding chat routes disable org-wide semantic.",
+  "rollout_priority": "Month 3+ — after T3/T4/T1 and safety model proven",
+  "makes_sense_verdict": "yes_with_caveats",
+  "makes_sense_rationale": "High ROI on repetitive low-risk queries; unacceptable as default org-wide without governance.",
+  "primary_sources": [
+    {
+      "title": "vCache paper",
+      "url": "https://arxiv.org/abs/2502.03771"
+    },
+    {
+      "title": "GPTCache",
+      "url": "https://github.com/zilliztech/gptcache"
+    },
+    {
+      "title": "Portkey semantic caching",
+      "url": "https://docs.portkey.ai/docs/product/ai-gateway/cache-simple-and-semantic"
+    }
+  ],
+  "uncertain": []
+}

@@ -1,0 +1,31 @@
+{
+  "name": "LiteLLM proxy caching",
+  "category": "Products and OSS",
+  "official_url": "https://docs.litellm.ai/docs/proxy/caching",
+  "already_exists": "full_product",
+  "existence_evidence": "Supports in-memory, disk, Redis, S3, GCS; redis-semantic and qdrant-semantic with similarity_threshold; Redis Stack/RediSearch required for semantic (common ops friction). Redis+Qdrant recipe from Redis developer relations.",
+  "gap_vs_vision": "No native retrieval-tier or clearance keys; cross-user safe only with config discipline and external policy layer.",
+  "summary": "OpenAI-compatible proxy caching all org LLM traffic—exact and semantic at ingress.",
+  "how_it_works": "config.yaml litellm_settings.cache=true; cache_params type redis|redis-semantic|qdrant-semantic; optional TTL and namespace.",
+  "integration_points": "Central proxy for chatbots, IDE plugins pointing to proxy, cost tracking.",
+  "correctness_risks": "Semantic threshold 0.8 default in docs may be too loose for enterprise; shared cache without namespace leaks across envs.",
+  "cost_latency_impact": "Org-wide hit rate aggregation possible; one place to measure savings.",
+  "environmental_impact": "Centralized reduction of duplicate calls.",
+  "cross_user_sharing": "org_wide_with_guards — requires custom key namespace + route rules",
+  "pii_and_compliance_controls": "Add gateway hook for scrub/classify before cache; separate Redis DB per sensitivity.",
+  "org_scale_patterns": "Single LiteLLM deployment HA pair; Redis cluster backend.",
+  "rollout_priority": "Week 2–4 for gateway + Redis exact; semantic after policy",
+  "makes_sense_verdict": "strong_yes",
+  "makes_sense_rationale": "Best OSS fit for multi-tool org entry point per tool-discovery; pair with custom Tier 3.",
+  "primary_sources": [
+    {
+      "title": "LiteLLM caching docs",
+      "url": "https://docs.litellm.ai/docs/proxy/caching"
+    },
+    {
+      "title": "Redis LiteLLM recipe",
+      "url": "https://redis.io/blog/scale-your-llm-gateway/"
+    }
+  ],
+  "uncertain": []
+}

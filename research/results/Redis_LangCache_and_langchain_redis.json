@@ -1,0 +1,31 @@
+{
+  "name": "Redis LangCache and langchain-redis",
+  "category": "Products and OSS",
+  "official_url": "https://redis.io/docs/latest/develop/ai/redisvl/user_guide/langcache_semantic_cache/",
+  "already_exists": "full_product",
+  "existence_evidence": "langchain-redis: RedisCache, RedisSemanticCache (Redis Stack), LangCacheSemanticCache managed API. Redis positions LangCache as managed semantic cache with server-side embeddings.",
+  "gap_vs_vision": "Cache backend not full org policy layer; LangChain-centric vs all coding tools unless proxied.",
+  "summary": "Redis-backed exact and semantic LLM caches with optional fully managed LangCache service.",
+  "how_it_works": "RedisSemanticCache: client embeds, RediSearch vector index. LangCache: cache_id + api_key, server-side embed, distance_threshold on check.",
+  "integration_points": "LangChain apps; can sit behind custom gateway wrapping same Redis keys.",
+  "correctness_risks": "Redis Stack module missing breaks semantic (common LiteLLM issue). Managed LangCache less control over embed model.",
+  "cost_latency_impact": "Sub-ms vector search cited in industry posts; managed service adds vendor fee.",
+  "environmental_impact": "Standard cache benefits.",
+  "cross_user_sharing": "org_wide_with_guards — shared Redis with key prefixes",
+  "pii_and_compliance_controls": "Use Redis ACLs + key taxonomy; LangCache attributes for pre-configured filters only.",
+  "org_scale_patterns": "Enterprise Redis cluster many teams already operate; LangCache if avoid ops.",
+  "rollout_priority": "Backend choice for LiteLLM redis-semantic or LangChain services",
+  "makes_sense_verdict": "yes_with_caveats",
+  "makes_sense_rationale": "Natural store for T1 and T2 if already Redis-heavy; pair with gateway for non-LangChain tools.",
+  "primary_sources": [
+    {
+      "title": "LangCache user guide",
+      "url": "https://redis.io/docs/latest/develop/ai/redisvl/user_guide/langcache_semantic_cache/"
+    },
+    {
+      "title": "langchain-redis",
+      "url": "https://github.com/langchain-ai/langchain-redis"
+    }
+  ],
+  "uncertain": []
+}

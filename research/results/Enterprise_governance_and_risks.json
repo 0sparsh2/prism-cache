@@ -1,0 +1,33 @@
+{
+  "name": "Enterprise governance and risks",
+  "category": "Governance",
+  "already_exists": "partial_fragment",
+  "existence_evidence": "Gateways offer audit logs, RBAC, PII guardrails (Portkey, etc.). GDPR erasure and SOC2 are organizational processes—not cache-specific products. Semantic cache false positives documented in GPTCache benchmarks and vCache paper.",
+  "gap_vs_vision": "Unified governance plane for all tiers and tools with prohibited cross-user answer sharing by default.",
+  "summary": "Risk register for org-wide LLM caching: staleness, leakage, regulatory, model drift, insider data in coding assistants.",
+  "how_it_works": "Policies: classification mandatory, retention limits, incident response for bad cache hit, periodic cache purge on corpus update, red team paraphrase tests near semantic threshold.",
+  "integration_points": "Legal, security, IAM, DLP, SIEM, model risk management.",
+  "correctness_risks": "Highest: Tier 2 cross-user; medium: Tier 3 wrong chunks; lower: Tier 1 stale FAQ.",
+  "cost_latency_impact": "Governance overhead small vs breach or wrong contract advice cost.",
+  "environmental_impact": "N/A",
+  "cross_user_sharing": "org_wide_with_guards — default deny, explicit allow per route",
+  "pii_and_compliance_controls": "Data minimization in cache values; encryption; access logs; DPIA before org-wide semantic; regional residency for Redis.",
+  "org_scale_patterns": "Cache governance board; align with existing records retention; separate prod/stage cache namespaces.",
+  "rollout_priority": "Week 0 parallel with architecture",
+  "makes_sense_verdict": "strong_yes",
+  "makes_sense_rationale": "Enabler for allowed cross-user reuse; not optional for regulated orgs.",
+  "primary_sources": [
+    {
+      "title": "vCache correctness",
+      "url": "https://arxiv.org/abs/2502.03771"
+    },
+    {
+      "title": "Portkey governance features",
+      "url": "https://portkey.ai/features/ai-gateway"
+    }
+  ],
+  "uncertain": [
+    "official_url",
+    "environmental_impact"
+  ]
+}

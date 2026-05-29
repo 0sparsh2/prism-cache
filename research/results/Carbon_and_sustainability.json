@@ -1,0 +1,29 @@
+{
+  "name": "Carbon and sustainability",
+  "category": "Impact",
+  "official_url": "https://arxiv.org/html/2505.23970v2",
+  "already_exists": "research_only",
+  "existence_evidence": "GreenCache (Cache Your Prompt When It's Green): operational carbon down from avoided compute; embodied carbon from SSD cache storage; 12-25% net carbon reduction in evaluated scenarios with adaptive sizing.",
+  "gap_vs_vision": "No mainstream gateway exposes carbon-aware cache sizing; org should track tokens avoided not only dollars.",
+  "summary": "Caching reduces inference energy; large persistent KV/semantic stores add storage manufacturing emissions—net benefit depends on hit rate, cache size, grid carbon intensity.",
+  "how_it_works": "GreenCache resizes cache based on load and carbon intensity (CI); high CI favors larger cache; low CI favors smaller cache to limit embodied cost.",
+  "integration_points": "Platform SRE, sustainability reporting, LMCache storage tier choices.",
+  "correctness_risks": "[uncertain] exact net carbon for semantic Redis vs GPU savings without org-specific measurement.",
+  "cost_latency_impact": "Aligned with cost savings—fewer tokens computed.",
+  "environmental_impact": "Cross-user caching multiplies avoided compute per stored entry; measure tokens_saved and estimate kg CO2e via grid factors.",
+  "cross_user_sharing": "org_wide_with_guards — more users per entry improves carbon amortization",
+  "pii_and_compliance_controls": "N/A to carbon; don't skip compliance for green claims.",
+  "org_scale_patterns": "Report cache hit rate alongside estimated emissions avoided in ESG dashboards.",
+  "rollout_priority": "Ongoing metrics after cache live",
+  "makes_sense_verdict": "yes_with_caveats",
+  "makes_sense_rationale": "Supports business case beyond cost; quantify after deployment.",
+  "primary_sources": [
+    {
+      "title": "GreenCache paper",
+      "url": "https://arxiv.org/html/2505.23970v2"
+    }
+  ],
+  "uncertain": [
+    "correctness_risks"
+  ]
+}

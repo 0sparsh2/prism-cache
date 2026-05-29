@@ -1,0 +1,107 @@
+# Field schema for distributed prompt caching deep research (2026).
+# JSON results use FLAT top-level keys matching every field "name" below.
+
+field_categories:
+  - category: Basic Info
+    fields:
+      - name: name
+        description: Display name of the research item
+        detail_level: brief
+        required: true
+      - name: category
+        description: Segment / bucket from outline.yaml
+        detail_level: brief
+        required: true
+      - name: official_url
+        description: Primary documentation, paper, or product URL
+        detail_level: brief
+        required: false
+
+  - category: Exists today
+    fields:
+      - name: already_exists
+        description: >
+          Does this capability exist in production tools or is it mainly greenfield?
+          Values like full_product, partial_fragment, research_only, greenfield.
+        detail_level: brief
+        required: true
+      - name: existence_evidence
+        description: >
+          Who ships it (vendors, OSS, papers) and how mature; cite specifics.
+        detail_level: detailed
+        required: true
+      - name: gap_vs_vision
+        description: >
+          What the Claude/org-level vision adds that current offerings lack.
+        detail_level: detailed
+        required: true
+
+  - category: Technical
+    fields:
+      - name: summary
+        description: What this item is and how it fits the multi-tier stack
+        detail_level: detailed
+        required: true
+      - name: how_it_works
+        description: Mechanism, keys, invalidation, data stored
+        detail_level: detailed
+        required: true
+      - name: integration_points
+        description: Where it hooks (gateway, app, inference engine, vector DB)
+        detail_level: detailed
+        required: true
+      - name: correctness_risks
+        description: False cache hits, staleness, version skew, security
+        detail_level: detailed
+        required: true
+
+  - category: Economics and impact
+    fields:
+      - name: cost_latency_impact
+        description: Typical savings, when hits occur, embedding overhead tradeoffs
+        detail_level: detailed
+        required: true
+      - name: environmental_impact
+        description: Compute vs storage carbon tradeoffs if applicable
+        detail_level: brief
+        required: false
+
+  - category: Enterprise fit
+    fields:
+      - name: cross_user_sharing
+        description: >
+          Can this tier safely cache across users? none / same_tenant_only /
+          org_wide_static_only / org_wide_with_guards — and what guards are required.
+        detail_level: brief
+        required: true
+      - name: pii_and_compliance_controls
+        description: >
+          How to prevent personal data in user A's prompt from appearing in user B's
+          cache hit (normalization, blocklists, classification, encryption, retention).
+        detail_level: detailed
+        required: true
+      - name: org_scale_patterns
+        description: Multi-tenant, shared cache across teams, audit, compliance
+        detail_level: detailed
+        required: true
+      - name: rollout_priority
+        description: >
+          Recommended phase (week 1–2, month 2, etc.) and prerequisites
+        detail_level: brief
+        required: false
+      - name: makes_sense_verdict
+        description: >
+          Should an enterprise RAG platform invest here? strong_yes / yes_with_caveats / no
+        detail_level: brief
+        required: true
+      - name: makes_sense_rationale
+        description: Evidence-based rationale for the verdict
+        detail_level: detailed
+        required: true
+
+  - category: Sources
+    fields:
+      - name: primary_sources
+        description: List of {title, url} evidence objects
+        detail_level: detailed
+        required: true

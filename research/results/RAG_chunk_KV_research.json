@@ -1,0 +1,35 @@
+{
+  "name": "RAG chunk KV research",
+  "category": "Research",
+  "official_url": "https://arxiv.org/html/2510.10129v2",
+  "already_exists": "research_only",
+  "existence_evidence": "TurboRAG (precomputed chunk KV, 9.4x TTFT); CacheBlend/LMCache (partial KV recompute); Cache-Craft (chunk-cache manager, 51% less redundant compute vs prefix); CacheClip, KVLink, SmartCache (NeurIPS 2025). Production adoption partial via LMCache lineage.",
+  "gap_vs_vision": "Academic systems lack enterprise compliance lanes; inform Tier 3/4 engineering not buy-ready org product.",
+  "summary": "Research on reusing per-chunk KV states and retrieval results instead of full prefill per query.",
+  "how_it_works": "Offline precompute KV per passage; online stitch/reorder/recompute subset for cross-chunk attention; selective token recompute (CacheClip) or positional re-encoding (KVLink).",
+  "integration_points": "Future RAG inference engines; LMCache codebase for CacheBlend.",
+  "correctness_risks": "Naive KV concat drops quality; systems add recompute or fine-tuning to recover.",
+  "cost_latency_impact": "2-9x TTFT improvements in papers; throughput 1.6-5x in Cache-Craft production-style evals.",
+  "environmental_impact": "Large GPU savings if deployed at scale.",
+  "cross_user_sharing": "org_wide_with_guards — chunk KV tied to public corpus chunks not user text",
+  "pii_and_compliance_controls": "Only precompute KV for approved corpus chunks; never from user-uploaded ephemeral context.",
+  "org_scale_patterns": "Watch LMCache/CacheBlend for productionizable Tier 3+4 merge.",
+  "rollout_priority": "Monitor 6-12mo; implement simple retrieval cache now",
+  "makes_sense_verdict": "yes_with_caveats",
+  "makes_sense_rationale": "Validates Tier 3 priority; full chunk-KV reuse is engineering-heavy for v1.",
+  "primary_sources": [
+    {
+      "title": "CacheClip",
+      "url": "https://arxiv.org/html/2510.10129v2"
+    },
+    {
+      "title": "TurboRAG",
+      "url": "https://aclanthology.org/anthology-files/anthology-files/pdf/emnlp/2025.emnlp-main.334.pdf"
+    },
+    {
+      "title": "SmartCache NeurIPS 2025",
+      "url": "https://neurips.cc/virtual/2025/poster/116287"
+    }
+  ],
+  "uncertain": []
+}

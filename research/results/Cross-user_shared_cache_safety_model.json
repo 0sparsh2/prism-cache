@@ -1,0 +1,32 @@
+{
+  "name": "Cross-user shared cache safety model",
+  "category": "Governance",
+  "already_exists": "partial_fragment",
+  "existence_evidence": "Gateways offer org-level caching (Portkey) but rarely ship complete ABAC+DLP+lane models. Cloud providers offer encryption and tenant IDs; enterprises implement classification via internal policy engines. vCache and similar research address correctness bounds, not HR/legal tenancy.",
+  "gap_vs_vision": "No standard SKU for 'safe cross-user LLM cache.' Organizations must define lanes: user-private, team+clearance, org-static FAQ. Vision adds write/read policy, erasure, and prohibited content classes per lane.",
+  "summary": "Framework for when User B may receive cached artifacts derived from User A's traffic. Separates cacheable public intent from personal context (HR, health, proprietary code, named individuals).",
+  "how_it_works": "Lanes: (1) user-private—no cross-user reads; (2) team/project—shared if same clearance+corpus; (3) org-static—scrubbed FAQs and retrieval-only keys. Keys include org_id, lane, sensitivity, corpus_version, model_id. Write path: classify prompt, scrub, reject or route. Read path: match lane+clearance+version. Optional LLM judge on grey-zone semantic hits.",
+  "integration_points": "Gateway middleware, RAG preprocessor, SIEM/audit bus, IAM attributes, DLP/NER services, legal retention policies.",
+  "correctness_risks": "Semantic false positive across users is a data breach and wrong decision. Coding tools leaking snippets across repos. Stale policy docs after version bump.",
+  "cost_latency_impact": "Governance adds milliseconds (classification) vs dollars saved on hits; net positive when hit rate >5-10% on shared lanes.",
+  "environmental_impact": "Indirect: safer sharing enables broader reuse and fewer redundant GPU jobs.",
+  "cross_user_sharing": "org_wide_with_guards — lane-dependent",
+  "pii_and_compliance_controls": "Normalize+hash only after redaction; never key on raw employee identifiers; encrypt at rest; TTL and legal hold; right-to-erasure deletes by key prefix; log cache_key_hash not plaintext.",
+  "org_scale_patterns": "Central policy service consumed by all AI tools; forbidden to bypass with per-team Redis without taxonomy.",
+  "rollout_priority": "Week 0–1: design lanes before any cross-user cache writes",
+  "makes_sense_verdict": "strong_yes",
+  "makes_sense_rationale": "Without this model, cross-user caching is unacceptable for regulated enterprises; with it, Tier 3 and gated Tier 1 become deployable.",
+  "primary_sources": [
+    {
+      "title": "vCache verified semantic cache",
+      "url": "https://arxiv.org/abs/2502.03771"
+    },
+    {
+      "title": "Portkey semantic threshold guidance",
+      "url": "https://portkey.ai/blog/semantic-caching-thresholds/"
+    }
+  ],
+  "uncertain": [
+    "official_url"
+  ]
+}
