@@ -19,9 +19,9 @@ Research is complete under [`research/`](research/). Implementation phases below
 
 ## Phase C — Tier 4 prefix optimization (Week 3–4)
 
-- [ ] Prompt template audit: stable prefix, variable suffix
-- [ ] Provider `cache_control` markers
-- [ ] Dashboard for `cache_read_input_tokens` / creation tokens
+- [x] Prompt template audit: stable prefix, variable suffix
+- [x] Provider `cache_control` markers
+- [x] Dashboard for `cache_read_input_tokens` / creation tokens
 
 ## Phase D — Gateway + Tier 1 (Month 2)
 
@@ -39,15 +39,18 @@ Research is complete under [`research/`](research/). Implementation phases below
 
 - [ ] LMCache + vLLM for cross-node KV if not API-only
 
-## v0.1 shipped (`src/prism_cache/`)
+## v0.2 shipped (`src/prism_cache/`)
 
 | Module | Purpose |
 |--------|---------|
 | `tier0.py` | Normalize, scrub PII, classify lane |
+| `tier3.py` | Retrieval cache + memory/Redis stores |
+| `tier4.py` | RAG prefix assembly + Anthropic `cache_control` |
+| `prompt_audit.py` | Template audit for cache-safe prefixes |
+| `prefix_metrics.py` | Tier 4 token dashboard |
+| `pipeline.py` | `rag_prepare()` — Tier 3 + Tier 4 |
 | `keys.py` | Deterministic cache keys |
 | `policy.py` | Cross-user write rules |
-| `tier3.py` | Retrieval cache + memory/Redis stores |
-| `pipeline.py` | `PrismPipeline.rag_retrieve()` |
 | `metrics.py` | Hit rate / latency registry |
 | `corpus.py` | Version bump / invalidation |
 

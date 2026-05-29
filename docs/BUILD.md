@@ -1,4 +1,4 @@
-# Build phase — PRISM-Cache v0.1
+# Build phase — PRISM-Cache v0.2
 
 ## Install
 
@@ -37,10 +37,36 @@ chunks, tier0, ctx, lookup = pipeline.rag_retrieve(
 )
 ```
 
+## Tier 4 — prefix cache + Anthropic body
+
+```python
+bundle = pipeline.rag_prepare(
+    "what is the expense policy?",
+    my_retriever,
+    lambda chunk_id: fetch_chunk_text(chunk_id),
+    user_id="user-123",
+    model_id="claude-sonnet-4-20250514",
+)
+
+# Send to Anthropic Messages API
+# client.messages.create(**bundle.anthropic_body)
+
+# After response, record prefix cache usage
+pipeline.record_prefix_cache_usage(
+    response.usage.model_dump(),
+    model_id="claude-sonnet-4-20250514",
+    prefix_fingerprint=bundle.prompt.prefix_fingerprint,
+)
+print(pipeline.prefix_cache_dashboard())
+```
+
+Run `python examples/tier4_rag_prompt.py` for a full walkthrough.
+
 ## Examples
 
 ```bash
 python examples/rag_demo.py
+python examples/tier4_rag_prompt.py
 python examples/tier3_load_test.py --users 50 --queries 5
 ```
 
