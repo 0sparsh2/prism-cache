@@ -25,8 +25,18 @@ Route rules (`config/prism.example.yaml`) send **coding tools → `user-private`
 
 ## Run LiteLLM locally
 
+**Use the project venv** (Python **3.11–3.13**). LiteLLM does not install on **Python 3.14** yet (orjson build). Do not use a global `litellm` from Python 3.9.
+
+### Option A — one venv on Python 3.12 (recommended)
+
 ```bash
-pip install litellm redis
+cd "/Users/sparshnagpal/Desktop/projects/Distributed Prompt Caching"
+deactivate 2>/dev/null || true
+rm -rf .venv
+python3.12 -m venv .venv
+source .venv/bin/activate
+pip install -e ".[dev,gateway]"
+
 docker compose up -d redis
 
 export OPENAI_API_KEY=...
@@ -35,6 +45,31 @@ export LITELLM_MASTER_KEY=sk-local-dev
 
 litellm --config gateway/litellm.prism.yaml --port 4000
 ```
+
+### Option B — keep PRISM on 3.14, separate gateway venv
+
+```bash
+python3.12 -m venv .venv-gateway
+source .venv-gateway/bin/activate
+pip install 'litellm[proxy]' redis
+litellm --config gateway/litellm.prism.yaml --port 4000
+```
+
+Verify which binary runs:
+
+```bash
+which litellm          # should be inside your activated venv, not .../Python/3.9/...
+python --version       # 3.11–3.13 for LiteLLM
+```
+
+### Troubleshooting
+
+| Error | Cause | Fix |
+|-------|--------|-----|
+| `No module named 'fastapi_sso'` | Installed `litellm` without proxy extras | `pip install 'litellm[proxy]'` in **venv** |
+| `unsupported operand type(s) for \|` | Python 3.9 global `litellm` | Use venv on 3.11–3.13 |
+| `Failed building wheel for orjson` | Python 3.14 venv | Recreate venv with `python3.12` |
+| Redis connection errors | Redis not running | `docker compose up -d redis` |
 
 Point clients at `http://localhost:4000/v1` with `Authorization: Bearer $LITELLM_MASTER_KEY`.
 
