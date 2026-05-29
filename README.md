@@ -143,15 +143,13 @@ python3 -m venv .venv && .venv/bin/pip install pyyaml
 
 ## Build phase
 
-**v0.2 shipped:** Tier 0 + Tier 3 + **Tier 4** (prefix assembly, `cache_control`, metrics dashboard).
+**v0.3 shipped:** Tier 0–4 + **Tier 1 FAQ**, route rules, LiteLLM gateway config.
 
 Next up ([ROADMAP.md](ROADMAP.md)):
 
-1. ~~**Lanes + Tier 0**~~ ✅  
-2. ~~**Tier 3** retrieval cache~~ ✅  
-3. ~~**Tier 4** prompt structure + provider prefix markers~~ ✅  
-4. **Gateway** (LiteLLM) + **Tier 1** FAQ exact cache  
-5. **Tier 2** semantic — FAQ lane only, after security sign-off  
+1. ~~Phases A–D~~ ✅  
+2. **Phase E** — Tier 2 semantic cache (FAQ lane, gated)  
+3. **Phase F** — LMCache (optional, self-hosted)  
 
 Track progress in [ROADMAP.md](ROADMAP.md). Contributions welcome.
 
@@ -179,4 +177,4 @@ Research produced with a structured **deep-research** workflow ([Weizhena/Deep-R
 
 ---
 
-**PRISM-Cache v0.2** · Phase A–C shipped · Phase D (gateway + Tier 1) next
+**PRISM-Cache v0.3** · Phases A–D shipped · Phase E next

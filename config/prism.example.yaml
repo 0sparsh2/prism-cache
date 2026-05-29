@@ -10,6 +10,7 @@ defaults:
 
 redis:
   url: redis://localhost:6379/0
+  tier1_key_prefix: prism:t1
   tier3_key_prefix: prism:t3
   # Omit ttl_seconds to rely on corpus_version invalidation only
   ttl_seconds: null
@@ -18,9 +19,12 @@ routes:
   coding-assistant:
     lane: user-private
     route_hint: coding
+    tier1_enabled: false
   internal-faq-bot:
     lane: org-static
     sensitivity: low
+    tier1_enabled: true
   program-rag:
     lane: team
     sensitivity: medium
+    tier1_enabled: false

@@ -1,4 +1,4 @@
-# Build phase — PRISM-Cache v0.2
+# Build phase — PRISM-Cache v0.3
 
 ## Install
 
@@ -62,11 +62,44 @@ print(pipeline.prefix_cache_dashboard())
 
 Run `python examples/tier4_rag_prompt.py` for a full walkthrough.
 
+## Tier 1 — FAQ exact cache + routes (Phase D)
+
+```python
+from prism_cache import PrismPipeline, PrismConfig
+
+pipeline = PrismPipeline(PrismConfig(org_id="acme"))
+
+answer = pipeline.faq_answer(
+    "how do I reset my password?",
+    route_name="internal-faq-bot",  # org-static, Tier 1 on
+    generate=lambda q: call_litellm(q),
+    user_id="alice",
+).text
+
+# coding tools: user-private, Tier 1 off — no org-wide sharing
+pipeline.faq_answer("fix my code", "coding-assistant", generate, user_id="u1")
+```
+
+```bash
+python examples/tier1_faq_demo.py
+python examples/load_routes_from_config.py
+```
+
+## LiteLLM gateway
+
+See [`docs/GATEWAY.md`](GATEWAY.md). Quick start:
+
+```bash
+pip install litellm
+litellm --config gateway/litellm.prism.yaml --port 4000
+```
+
 ## Examples
 
 ```bash
 python examples/rag_demo.py
 python examples/tier4_rag_prompt.py
+python examples/tier1_faq_demo.py
 python examples/tier3_load_test.py --users 50 --queries 5
 ```
 

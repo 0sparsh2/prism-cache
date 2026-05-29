@@ -1,9 +1,11 @@
 """PRISM-Cache — Prompt Reuse & Inference Sharing Mesh."""
 
 from prism_cache.models import CacheContext, CacheLane, CacheTier, RetrievalHit, Sensitivity
-from prism_cache.pipeline import PrismConfig, PrismPipeline, RagPromptBundle
+from prism_cache.pipeline import FaqAnswerResult, PrismConfig, PrismPipeline, RagPromptBundle
 from prism_cache.prefix_metrics import PrefixCacheUsage
 from prism_cache.prompt_audit import PromptAuditResult, audit_assembled, audit_shared_prefix
+from prism_cache.routes import RouteRegistry, RouteRule, default_routes
+from prism_cache.settings import PrismSettings, load_settings, parse_settings
 from prism_cache.tier4 import AssembledPrompt, assemble_rag_prompt, anthropic_request_body
 
 __all__ = [
@@ -11,17 +13,24 @@ __all__ = [
     "CacheContext",
     "CacheLane",
     "CacheTier",
+    "FaqAnswerResult",
     "PrefixCacheUsage",
     "PrismConfig",
     "PrismPipeline",
+    "PrismSettings",
     "PromptAuditResult",
     "RagPromptBundle",
     "RetrievalHit",
+    "RouteRegistry",
+    "RouteRule",
     "Sensitivity",
     "anthropic_request_body",
     "assemble_rag_prompt",
     "audit_assembled",
     "audit_shared_prefix",
+    "default_routes",
+    "load_settings",
+    "parse_settings",
 ]
 
-__version__ = "0.2.0"
+__version__ = "0.3.0"

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Any
+from typing import Any, Callable
 
 from prism_cache.corpus import CorpusVersionProvider, InMemoryCorpusVersionProvider
 from prism_cache.metrics import MetricsRegistry
@@ -15,7 +15,9 @@ from prism_cache.models import (
 )
 from prism_cache.prefix_metrics import PrefixCacheMetricsRegistry, PrefixCacheUsage
 from prism_cache.prompt_audit import PromptAuditResult, audit_assembled
+from prism_cache.routes import RouteRegistry, default_routes
 from prism_cache.tier0 import process_tier0
+from prism_cache.tier1 import InMemoryExactStore, Tier1ExactCache, Tier1LookupResult
 from prism_cache.tier3 import InMemoryRetrievalStore, Retriever, RetrievalStore, Tier3RetrievalCache
 from prism_cache.tier4 import AssembledPrompt, ChunkTextResolver, assemble_rag_prompt, anthropic_request_body
 
@@ -43,26 +45,47 @@ class RagPromptBundle:
     anthropic_body: dict[str, Any] | None = None
 
 
+@dataclass
+class FaqAnswerResult:
+    text: str
+    from_cache: bool
+    tier1: Tier1LookupResult | None
+    tier0: Tier0Result
+    ctx: CacheContext
+
+
+GenerateFn = Callable[[str], str]
+
+
 class PrismPipeline:
-    """Orchestrates Tier 0 prep, Tier 3 retrieval cache, and Tier 4 prefix assembly."""
+    """Orchestrates Tier 0–4: exact FAQ, retrieval, prefix assembly, route rules."""
 
     def __init__(
         self,
         config: PrismConfig,
         *,
         store: RetrievalStore | None = None,
+        exact_store: InMemoryExactStore | None = None,
         corpus: CorpusVersionProvider | None = None,
         metrics: MetricsRegistry | None = None,
         prefix_metrics: PrefixCacheMetricsRegistry | None = None,
+        routes: RouteRegistry | None = None,
+        tier1_ttl_seconds: int | None = None,
     ) -> None:
         self.config = config
         self.corpus = corpus or InMemoryCorpusVersionProvider()
         self.metrics = metrics or MetricsRegistry()
         self.prefix_metrics = prefix_metrics or PrefixCacheMetricsRegistry()
+        self.routes = routes or default_routes()
         self.tier3 = Tier3RetrievalCache(
             store or InMemoryRetrievalStore(),
             embed_model_id=config.embed_model_id,
             metrics=self.metrics,
+        )
+        self.tier1 = Tier1ExactCache(
+            exact_store or InMemoryExactStore(),
+            metrics=self.metrics,
+            default_ttl_seconds=tier1_ttl_seconds,
         )
 
     def corpus_version(self) -> str:
@@ -98,6 +121,76 @@ class PrismPipeline:
         )
         return tier0, ctx
 
+    def prepare_for_route(
+        self,
+        query: str,
+        route_name: str,
+        *,
+        user_id: str | None = None,
+        team_id: str | None = None,
+        clearance: str = "default",
+        model_id: str = "",
+    ) -> tuple[Tier0Result, CacheContext]:
+        rule = self.routes.resolve(route_name)
+        return self.prepare(
+            query,
+            lane=rule.lane,
+            sensitivity=rule.sensitivity,
+            route_hint=rule.route_hint,
+            user_id=user_id,
+            team_id=team_id,
+            clearance=clearance,
+            model_id=model_id,
+        )
+
+    def faq_answer(
+        self,
+        query: str,
+        route_name: str,
+        generate: GenerateFn,
+        *,
+        model_id: str = "gpt-4o-mini",
+        user_id: str | None = None,
+        team_id: str | None = None,
+    ) -> FaqAnswerResult:
+        """
+        Tier 1 exact cache for FAQ routes (org-static by default).
+
+        Coding routes disable Tier 1 and always call `generate`.
+        """
+        rule = self.routes.resolve(route_name)
+        tier0, ctx = self.prepare_for_route(
+            query,
+            route_name,
+            user_id=user_id,
+            team_id=team_id,
+            model_id=model_id,
+        )
+
+        if not rule.tier1_enabled:
+            text = generate(tier0.normalized_query)
+            return FaqAnswerResult(
+                text=text,
+                from_cache=False,
+                tier1=None,
+                tier0=tier0,
+                ctx=ctx,
+            )
+
+        text, lookup = self.tier1.lookup_or_generate(
+            ctx,
+            tier0,
+            generate,
+            model_id=model_id,
+        )
+        return FaqAnswerResult(
+            text=text,
+            from_cache=lookup.hit,
+            tier1=lookup,
+            tier0=tier0,
+            ctx=ctx,
+        )
+
     def rag_retrieve(
         self,
         query: str,
@@ -108,13 +201,22 @@ class PrismPipeline:
         user_id: str | None = None,
         team_id: str | None = None,
         route_hint: str | None = None,
+        route_name: str | None = None,
     ) -> tuple[list[ChunkResult], Tier0Result, CacheContext, CacheLookupResult]:
-        tier0, ctx = self.prepare(
-            query,
-            user_id=user_id,
-            team_id=team_id,
-            route_hint=route_hint,
-        )
+        if route_name:
+            tier0, ctx = self.prepare_for_route(
+                query,
+                route_name,
+                user_id=user_id,
+                team_id=team_id,
+            )
+        else:
+            tier0, ctx = self.prepare(
+                query,
+                user_id=user_id,
+                team_id=team_id,
+                route_hint=route_hint,
+            )
         chunks, lookup = self.tier3.retrieve_or_fetch(
             ctx,
             tier0,
@@ -134,7 +236,6 @@ class PrismPipeline:
         model_id: str = "claude-sonnet-4-20250514",
         max_tokens: int = 1024,
     ) -> tuple[AssembledPrompt, PromptAuditResult, dict[str, Any]]:
-        """Assemble cache-friendly RAG prompt and Anthropic API body."""
         assembled = assemble_rag_prompt(
             system_prompt=system_prompt or self.config.default_system_prompt,
             chunks=chunks,
@@ -156,11 +257,11 @@ class PrismPipeline:
         user_id: str | None = None,
         team_id: str | None = None,
         route_hint: str | None = None,
+        route_name: str | None = None,
         system_prompt: str | None = None,
         model_id: str = "claude-sonnet-4-20250514",
         max_tokens: int = 1024,
     ) -> RagPromptBundle:
-        """Tier 3 retrieve + Tier 4 prefix assembly + audit."""
         chunks, tier0, ctx, lookup = self.rag_retrieve(
             query,
             retriever,
@@ -169,6 +270,7 @@ class PrismPipeline:
             user_id=user_id,
             team_id=team_id,
             route_hint=route_hint,
+            route_name=route_name,
         )
         prompt, audit, body = self.build_tier4_prompt(
             user_query=query,
@@ -196,7 +298,6 @@ class PrismPipeline:
         prefix_fingerprint: str,
         provider: str = "anthropic",
     ) -> None:
-        """Record cache_read_input_tokens / cache_creation_input_tokens from LLM response."""
         if isinstance(usage, dict):
             if provider == "openai":
                 parsed = PrefixCacheUsage.from_openai(usage)
@@ -211,7 +312,6 @@ class PrismPipeline:
         )
 
     def invalidate_corpus(self) -> str:
-        """Bump corpus version so new keys miss old entries."""
         return self.corpus.bump(self.config.org_id, self.config.corpus_id)
 
     def metrics_snapshot(self) -> dict[str, Any]:

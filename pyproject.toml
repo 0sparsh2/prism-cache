@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "prism-cache"
-version = "0.2.0"
+version = "0.3.0"
 description = "PRISM-Cache — Prompt Reuse & Inference Sharing Mesh for enterprise LLM caching"
 readme = "README.md"
 license = "MIT"
@@ -22,7 +22,8 @@ dependencies = []
 
 [project.optional-dependencies]
 redis = ["redis>=5.0"]
-dev = ["pytest>=8.0", "pytest-asyncio>=0.24", "redis>=5.0"]
+config = ["pyyaml>=6.0"]
+dev = ["pytest>=8.0", "pytest-asyncio>=0.24", "redis>=5.0", "pyyaml>=6.0"]
 
 [project.urls]
 Homepage = "https://github.com/0sparsh2/prism-cache"

@@ -15,6 +15,17 @@ def allows_tier3_shared_write(ctx: CacheContext, tier0: Tier0Result) -> bool:
     return allows_cross_user_read(ctx) or ctx.lane == CacheLane.TEAM
 
 
+def allows_tier1_write(ctx: CacheContext, tier0: Tier0Result) -> bool:
+    """Tier 1 exact FAQ — org-static cross-user; user-private per user_id only."""
+    if tier0.pii_detected:
+        return False
+    if ctx.lane == CacheLane.ORG_STATIC:
+        return True
+    if ctx.lane == CacheLane.USER_PRIVATE and ctx.user_id:
+        return True
+    return False
+
+
 def allows_tier2_shared_write(ctx: CacheContext, tier0: Tier0Result) -> bool:
     """Tier 2 (full answer semantic) — org-static FAQ only in v1."""
     if not allows_tier3_shared_write(ctx, tier0):
@@ -31,7 +42,7 @@ def write_policy_denial_reason(
         return None
     if tier == CacheTier.TIER2 and allows_tier2_shared_write(ctx, tier0):
         return None
-    if tier == CacheTier.TIER1 and ctx.lane == CacheLane.ORG_STATIC and not tier0.pii_detected:
+    if tier == CacheTier.TIER1 and allows_tier1_write(ctx, tier0):
         return None
     if tier0.pii_detected:
         return "pii_detected"

@@ -1,0 +1,36 @@
+# LiteLLM gateway — org-wide OpenAI-compatible entry for PRISM-Cache
+#
+# Generate from Python:
+#   python -c "from prism_cache.litellm_config import build_litellm_config, render_litellm_yaml; print(render_litellm_yaml(build_litellm_config()))" > gateway/litellm.generated.yaml
+#
+# Run:
+#   export OPENAI_API_KEY=...
+#   export ANTHROPIC_API_KEY=...
+#   export LITELLM_MASTER_KEY=sk-prism-local
+#   litellm --config gateway/litellm.prism.yaml --port 4000
+#
+# All tools point to: http://localhost:4000/v1
+
+model_list:
+  - model_name: gpt-4o-mini
+    litellm_params:
+      model: gpt-4o-mini
+      api_key: os.environ/OPENAI_API_KEY
+
+  - model_name: claude-sonnet-4-20250514
+    litellm_params:
+      model: claude-sonnet-4-20250514
+      api_key: os.environ/ANTHROPIC_API_KEY
+
+litellm_settings:
+  cache: true
+  cache_params:
+    type: redis
+    host: localhost
+    port: "6379"
+    namespace: prism:litellm
+    default_in_redis_ttl: 3600
+  set_verbose: false
+
+general_settings:
+  master_key: os.environ/LITELLM_MASTER_KEY

@@ -30,6 +30,10 @@ def build_cache_key(
     return f"prism:{ctx.org_id}:{ctx.lane.value}:{tier.value}:{digest[:32]}"
 
 
+def build_tier1_key_parts(*, query_hash: str, model_id: str) -> dict[str, str]:
+    return {"query_hash": query_hash, "model_id": model_id or "default"}
+
+
 def build_tier3_key_parts(
     *,
     query_hash: str,

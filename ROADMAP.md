@@ -25,9 +25,9 @@ Research is complete under [`research/`](research/). Implementation phases below
 
 ## Phase D — Gateway + Tier 1 (Month 2)
 
-- [ ] LiteLLM (or Portkey) as org-wide OpenAI-compatible entry
-- [ ] Exact cache for `org-static` FAQ lane only
-- [ ] Route rules: coding tools → `user-private` by default
+- [x] LiteLLM (or Portkey) as org-wide OpenAI-compatible entry
+- [x] Exact cache for `org-static` FAQ lane only
+- [x] Route rules: coding tools → `user-private` by default
 
 ## Phase E — Tier 2 semantic (Month 3+, gated)
 
@@ -39,22 +39,19 @@ Research is complete under [`research/`](research/). Implementation phases below
 
 - [ ] LMCache + vLLM for cross-node KV if not API-only
 
-## v0.2 shipped (`src/prism_cache/`)
+## v0.3 shipped (`src/prism_cache/`)
 
 | Module | Purpose |
 |--------|---------|
-| `tier0.py` | Normalize, scrub PII, classify lane |
-| `tier3.py` | Retrieval cache + memory/Redis stores |
-| `tier4.py` | RAG prefix assembly + Anthropic `cache_control` |
-| `prompt_audit.py` | Template audit for cache-safe prefixes |
-| `prefix_metrics.py` | Tier 4 token dashboard |
-| `pipeline.py` | `rag_prepare()` — Tier 3 + Tier 4 |
-| `keys.py` | Deterministic cache keys |
-| `policy.py` | Cross-user write rules |
-| `metrics.py` | Hit rate / latency registry |
-| `corpus.py` | Version bump / invalidation |
+| `tier1.py` | Exact FAQ answer cache (org-static lane) |
+| `routes.py` | Route → lane rules (coding → user-private) |
+| `settings.py` | Load `config/prism.example.yaml` |
+| `litellm_config.py` | Generate LiteLLM proxy + Redis config |
+| `gateway/litellm.prism.yaml` | Ready-to-run proxy config |
 
-See [`docs/BUILD.md`](docs/BUILD.md) for install and usage.
+Prior modules: `tier0`, `tier3`, `tier4`, `pipeline`, `policy`, `metrics`, `corpus`, `keys`, `prompt_audit`, `prefix_metrics`.
+
+See [`docs/BUILD.md`](docs/BUILD.md) and [`docs/GATEWAY.md`](docs/GATEWAY.md).
 
 ## Out of scope (v1)
 
