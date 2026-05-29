@@ -122,7 +122,7 @@ pipeline.faq_answer("how do I reset my login password?", "internal-faq-bot",
                     client.make_generate_fn(), user_id="bob")
 ```
 
-Guides: [`docs/BUILD.md`](docs/BUILD.md) · [`docs/GATEWAY.md`](docs/GATEWAY.md) · [`CHANGELOG.md`](CHANGELOG.md)
+Guides: [`docs/BUILD.md`](docs/BUILD.md) · [`docs/GATEWAY.md`](docs/GATEWAY.md) · [`docs/OPERATIONS.md`](docs/OPERATIONS.md) · [`CHANGELOG.md`](CHANGELOG.md)
 
 ---
 
