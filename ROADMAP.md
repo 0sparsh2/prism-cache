@@ -1,4 +1,4 @@
-# Build roadmap — PRIME-CACHE
+# Build roadmap — PRISM-Cache
 
 Research is complete under [`research/`](research/). Implementation phases below.
 

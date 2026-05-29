@@ -1,14 +1,28 @@
-# PRIME-CACHE
+# PRISM-Cache
 
-**P**rompt **R**euse **I**n **M**ulti-tier **E**nterprise — policy-aware LLM caching that lets thousands of users share safe reuse across chat, RAG, and coding tools.
+**prism-cache** — *Prompt Reuse & Inference Sharing Mesh* for the enterprise.
 
-> Per-user KV cache saves one person’s next turn. **PRIME-CACHE** saves the *next employee* asking the same thing — when it is safe to share.
+Policy-aware, multi-tier LLM caching: reuse prompts, retrieval, and inference **across users** (chat, RAG, coding tools) without treating compliance as an afterthought.
+
+> Per-user KV cache saves one person’s next turn. **PRISM** saves the *next employee* asking the same thing — when it is safe to share.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Research](https://img.shields.io/badge/docs-research%20report-green)](research/report.md)
 [![Roadmap](https://img.shields.io/badge/status-build%20phase-orange)](ROADMAP.md)
 
-**Repository:** [`prime-cache`](https://github.com/0sparsh2/prime-cache)
+---
+
+## What PRISM means
+
+| | |
+|---|---|
+| **P** | **Prompt** normalization, exact match, semantic similarity |
+| **R** | **Reuse** across users, tools, and sessions |
+| **I** | **Inference** savings (retrieval, prefix KV, full generation) |
+| **S** | **Sharing** mesh — one governed cache plane for the org |
+| **M** | **Mesh** of tiers (0–4) and **lanes** (`user-private`, `team`, `org-static`) |
+
+GitHub repo: [`prism-cache`](https://github.com/0sparsh2/prism-cache)
 
 ---
 
@@ -26,7 +40,7 @@ The same questions appear again and again — different people, different wordin
 - **Cache lanes** so HR, code, and public FAQ never share one bucket  
 - **Version-aware invalidation** when policies and contracts change  
 
-This repository captures **deep research (2025–2026)** on what already exists, what to build, and a **concrete build roadmap** for PRIME-CACHE.
+This repository captures **deep research (2025–2026)** on what already exists, what to build, and a **concrete build roadmap** for PRISM-Cache.
 
 ---
 
@@ -55,7 +69,7 @@ Full diagram: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md)
 | Question | Answer |
 |----------|--------|
 | Is there one product that does all of this? | **No** — gateways, Redis, GPTCache, LMCache, and cloud prefix cache are **fragments**. |
-| Is it worth building? | **Yes** — as **integration + policy + Tier 3**, not “turn on semantic cache.” |
+| Is it worth building? | **Yes** — PRISM is **integration + policy + Tier 3**, not “turn on semantic cache.” |
 | Safest cross-user tier | **Tier 3** (retrieval cache keyed by `corpus_version` + clearance) |
 | Riskiest cross-user tier | **Tier 2** (full answer semantic cache) |
 | Suggested stack | LiteLLM or Portkey + Redis/Qdrant + **custom Tier 3** + provider prefix (Tier 4) |
@@ -67,17 +81,17 @@ Full diagram: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md)
 ## Repository layout
 
 ```text
-prime-cache/
+prism-cache/
 ├── README.md                 ← you are here
 ├── ROADMAP.md                ← implementation checklist (build phase)
 ├── docs/
 │   └── ARCHITECTURE.md       ← tier + lane model for builders
 ├── research/
 │   ├── report.md             ← Phase 3 synthesis
-│   ├── outline.yaml
-│   ├── fields.yaml
-│   ├── results/*.json
-│   └── scripts/
+│   ├── outline.yaml          ← research scope
+│   ├── fields.yaml           ← JSON schema
+│   ├── results/*.json        ← per-topic evidence (Phase 2)
+│   └── scripts/              ← validate / regenerate artifacts
 └── LICENSE
 ```
 
@@ -102,8 +116,8 @@ Before any cross-user **write**, classify the request:
 ## Quick start (research artifacts)
 
 ```bash
-git clone https://github.com/0sparsh2/prime-cache.git
-cd prime-cache
+git clone https://github.com/0sparsh2/prism-cache.git
+cd prism-cache
 
 # Optional: validate Phase 2 JSON
 python3 -m venv .venv && .venv/bin/pip install pyyaml
@@ -127,7 +141,7 @@ We are moving from research → implementation. Planned order:
 4. **Gateway** (LiteLLM) + **Tier 1** FAQ exact cache  
 5. **Tier 2** semantic — FAQ lane only, after security sign-off  
 
-Track progress in [ROADMAP.md](ROADMAP.md).
+Track progress in [ROADMAP.md](ROADMAP.md). Contributions welcome once `src/` lands.
 
 ---
 
@@ -153,4 +167,4 @@ Research produced with a structured **deep-research** workflow ([Weizhena/Deep-R
 
 ---
 
-**PRIME-CACHE** · Research complete · Build phase starting
+**PRISM-Cache** · Research complete · **Build phase starting** · Issues and PRs welcome
