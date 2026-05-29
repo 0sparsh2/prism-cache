@@ -1,6 +1,8 @@
-# Architecture: org-scale multi-tier LLM cache
+# Architecture: PRIME-CACHE
 
-This document is the builder-oriented view of the cache plane. For evidence, sources, and per-component analysis, see [`research/report.md`](../research/report.md).
+**P**rompt **R**euse **I**n **M**ulti-tier **E**nterprise — builder-oriented view of the cache plane.
+
+For evidence, sources, and per-component analysis, see [`research/report.md`](../research/report.md).
 
 ## Problem
 
@@ -90,6 +92,6 @@ Use provider `cache_control` / equivalent on the last block of the shared prefix
 
 ## What we are building
 
-**Org-scale LLM cache** = gateway + policy engine + Tier 3 service + observability—not a single Redis plugin.
+**PRIME-CACHE** = gateway + policy engine + Tier 3 service + observability—not a single Redis plugin.
 
 See [ROADMAP.md](../ROADMAP.md) for implementation phases.

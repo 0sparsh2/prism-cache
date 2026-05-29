@@ -1,12 +1,14 @@
-# org-scale-llm-cache
+# PRIME-CACHE
 
-**Policy-aware, multi-tier LLM caching for the enterprise** — reuse prompts, retrieval, and inference **across users** (chat, RAG, coding tools) without treating compliance as an afterthought.
+**P**rompt **R**euse **I**n **M**ulti-tier **E**nterprise — policy-aware LLM caching that lets thousands of users share safe reuse across chat, RAG, and coding tools.
 
-> Per-user KV cache saves one person’s next turn. **Org-scale cache** saves the *next employee* asking the same thing — when it is safe to share.
+> Per-user KV cache saves one person’s next turn. **PRIME-CACHE** saves the *next employee* asking the same thing — when it is safe to share.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Research](https://img.shields.io/badge/docs-research%20report-green)](research/report.md)
 [![Roadmap](https://img.shields.io/badge/status-build%20phase-orange)](ROADMAP.md)
+
+**Repository:** [`prime-cache`](https://github.com/0sparsh2/prime-cache)
 
 ---
 
@@ -24,7 +26,7 @@ The same questions appear again and again — different people, different wordin
 - **Cache lanes** so HR, code, and public FAQ never share one bucket  
 - **Version-aware invalidation** when policies and contracts change  
 
-This repository captures **deep research (2025–2026)** on what already exists, what to build, and a **concrete build roadmap**.
+This repository captures **deep research (2025–2026)** on what already exists, what to build, and a **concrete build roadmap** for PRIME-CACHE.
 
 ---
 
@@ -65,17 +67,17 @@ Full diagram: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md)
 ## Repository layout
 
 ```text
-org-scale-llm-cache/
+prime-cache/
 ├── README.md                 ← you are here
 ├── ROADMAP.md                ← implementation checklist (build phase)
 ├── docs/
 │   └── ARCHITECTURE.md       ← tier + lane model for builders
 ├── research/
 │   ├── report.md             ← Phase 3 synthesis
-│   ├── outline.yaml          ← research scope
-│   ├── fields.yaml           ← JSON schema
-│   ├── results/*.json        ← per-topic evidence (Phase 2)
-│   └── scripts/              ← validate / regenerate artifacts
+│   ├── outline.yaml
+│   ├── fields.yaml
+│   ├── results/*.json
+│   └── scripts/
 └── LICENSE
 ```
 
@@ -100,8 +102,8 @@ Before any cross-user **write**, classify the request:
 ## Quick start (research artifacts)
 
 ```bash
-git clone https://github.com/0sparsh2/org-scale-llm-cache.git
-cd org-scale-llm-cache
+git clone https://github.com/0sparsh2/prime-cache.git
+cd prime-cache
 
 # Optional: validate Phase 2 JSON
 python3 -m venv .venv && .venv/bin/pip install pyyaml
@@ -125,7 +127,7 @@ We are moving from research → implementation. Planned order:
 4. **Gateway** (LiteLLM) + **Tier 1** FAQ exact cache  
 5. **Tier 2** semantic — FAQ lane only, after security sign-off  
 
-Track progress in [ROADMAP.md](ROADMAP.md). Contributions welcome once `src/` lands.
+Track progress in [ROADMAP.md](ROADMAP.md).
 
 ---
 
@@ -151,4 +153,4 @@ Research produced with a structured **deep-research** workflow ([Weizhena/Deep-R
 
 ---
 
-**Status:** Research complete · **Build phase starting** · Issues and PRs for implementation welcome
+**PRIME-CACHE** · Research complete · Build phase starting
