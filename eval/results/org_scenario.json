@@ -1,30 +1,30 @@
 {
-  "generated_at": "2026-05-29T21:37:32.939254+00:00",
+  "generated_at": "2026-05-30T04:46:49.960679+00:00",
   "scenario": {
     "org_id": "demo-corp",
-    "employees": 5,
+    "employees": 500,
     "paraphrases": 40,
     "unique_normalized_queries": 37,
-    "total_rag_requests": 200,
+    "total_rag_requests": 20000,
     "vector_db_calls": 37,
-    "tier3_hits": 163,
+    "tier3_hits": 19963,
     "tier3_misses": 37,
-    "tier3_hit_rate": 0.815,
-    "vector_calls_avoided": 163,
-    "vector_reduction_pct": 81.5,
+    "tier3_hit_rate": 0.99815,
+    "vector_calls_avoided": 19963,
+    "vector_reduction_pct": 99.815,
     "simulated_vector_latency_ms": 0.0,
-    "elapsed_ms": 3.22,
+    "elapsed_ms": 262.12,
     "corpus_version": "1",
     "lane": "team"
   },
   "metrics": {
     "tiers": {
       "tier3:team": {
-        "hits": 163,
+        "hits": 19963,
         "misses": 37,
         "writes": 37,
         "write_denied": 0,
-        "hit_rate": 0.815,
+        "hit_rate": 0.9981,
         "avg_latency_ms": 0.006
       }
     },

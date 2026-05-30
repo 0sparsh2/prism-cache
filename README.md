@@ -215,4 +215,4 @@ Research produced with a structured **deep-research** workflow ([Weizhena/Deep-R
 
 ---
 
-**PRISM-Cache v0.6.1** · Phases A–F · [Production](docs/PRODUCTION.md) · [Benchmarks](docs/BENCHMARKS.md) · [Org scenario](docs/ORG_SCENARIO.md) · [LMCache](docs/LMCACHE.md)
+**PRISM-Cache v0.6.2** · [Operations](docs/OPERATIONS.md) · [Benchmarks](docs/BENCHMARKS.md) · [Org scenario](docs/ORG_SCENARIO.md)

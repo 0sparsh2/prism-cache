@@ -17,7 +17,13 @@ jobs:
           python-version: "3.12"
 
       - name: Install package
-        run: pip install -e ".[dev]"
+        run: pip install -e ".[dev,config]"
 
       - name: Run tests
         run: pytest -q
+
+      - name: Governance eval (offline)
+        run: python -m eval.run_benchmarks --quiet
+
+      - name: Org scenario smoke
+        run: python examples/org_scenario_tier3.py --users 10 --vector-latency-ms 0

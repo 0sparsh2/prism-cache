@@ -16,6 +16,7 @@ from __future__ import annotations
 import argparse
 import sys
 import time
+import urllib.error
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -78,13 +79,17 @@ def main() -> int:
     for i, (user, question) in enumerate(scenarios):
         if i and not args.dry_run:
             time.sleep(1.5)
-        result = pipeline.faq_answer(
-            question,
-            "internal-faq-bot",
-            generate_fn,
-            user_id=user,
-            model_id="gemini-2.5-flash-lite",
-        )
+        try:
+            result = pipeline.faq_answer(
+                question,
+                "internal-faq-bot",
+                generate_fn,
+                user_id=user,
+                model_id="gemini-2.5-flash-lite",
+            )
+        except (TimeoutError, RuntimeError, urllib.error.URLError) as exc:
+            print(f"[ERROR             ] user={user:5} q={question[:40]:40} → {exc}")
+            continue
         if result.from_cache:
             tier = result.cache_tier.value if result.cache_tier else "?"
             extra = ""

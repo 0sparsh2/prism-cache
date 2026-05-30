@@ -115,10 +115,10 @@ run-demos:
 	fi
 	@if $(MAKE) -s check-gateway 2>/dev/null; then \
 		echo "\n=== eval-live ==="; \
-		$(LOAD_ENV) && .venv/bin/python -m eval.run_benchmarks --live --quiet; \
-		echo "eval-live OK (see eval/results/latest_live.json)"; \
+		$(LOAD_ENV) && .venv/bin/python -m eval.run_benchmarks --live --quiet || echo "eval-live skipped (gateway/quota)"; \
+		echo "eval-live done (see eval/results/latest_live.json)"; \
 		echo "\n=== FAQ via LiteLLM ==="; \
-		$(LOAD_ENV) && .venv/bin/python examples/faq_litellm_gemini.py; \
+		$(LOAD_ENV) && .venv/bin/python examples/faq_litellm_gemini.py || echo "FAQ demo had errors (quota/timeout — see GATEWAY.md)"; \
 	else \
 		echo "\n=== eval-live + FAQ skipped (start: make gateway) ==="; \
 	fi

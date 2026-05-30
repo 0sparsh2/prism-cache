@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.6.2] — 2026-05-29
+
+### Fixed
+
+- FAQ demo continues on LiteLLM timeout/quota errors; `make run-all` no longer aborts
+
+### Changed
+
+- CI: offline eval gate + org scenario smoke (10 users)
+- `docs/OPERATIONS.md` — full runbook with all Makefile targets
+
 ## [0.6.1] — 2026-05-29
 
 ### Added
