@@ -1,0 +1,93 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    name: Publish GitHub Release
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Validate tag matches pyproject version
+        id: version
+        run: |
+          python - <<'PY' >> "$GITHUB_OUTPUT"
+          import os
+          import tomllib
+          from pathlib import Path
+
+          tag = os.environ["GITHUB_REF_NAME"]
+          if not tag.startswith("v"):
+              raise SystemExit(f"Expected a v-prefixed tag, got: {tag}")
+
+          tag_version = tag[1:]
+          pyproject = tomllib.loads(Path("pyproject.toml").read_text())
+          project_version = pyproject["project"]["version"]
+
+          if project_version != tag_version:
+              raise SystemExit(
+                  f"Version mismatch: pyproject.toml has {project_version}, tag is {tag_version}"
+              )
+
+          prerelease = "true" if any(marker in tag_version for marker in ("a", "b", "rc", "-")) else "false"
+          print(f"tag_version={tag_version}")
+          print(f"prerelease={prerelease}")
+          PY
+
+      - name: Extract release notes from changelog
+        env:
+          RELEASE_VERSION: ${{ steps.version.outputs.tag_version }}
+        run: |
+          python - <<'PY'
+          import os
+          import re
+          from pathlib import Path
+
+          version = os.environ["RELEASE_VERSION"]
+          changelog = Path("CHANGELOG.md")
+          if not changelog.exists():
+              raise SystemExit("CHANGELOG.md is required for releases")
+
+          text = changelog.read_text()
+          headers = list(re.finditer(r"^## \[(?P<version>[^\]]+)\].*$", text, re.MULTILINE))
+
+          notes = None
+          for idx, header in enumerate(headers):
+              if header.group("version") != version:
+                  continue
+              start = header.end()
+              end = headers[idx + 1].start() if idx + 1 < len(headers) else len(text)
+              notes = text[start:end].strip()
+              break
+
+          if not notes:
+              raise SystemExit(f"Could not find a CHANGELOG.md section for version {version}")
+
+          Path("release_notes.md").write_text(notes + "\n")
+          PY
+
+      - name: Create GitHub release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: PRISM-Cache ${{ steps.version.outputs.tag_version }}
+          body_path: release_notes.md
+          prerelease: ${{ steps.version.outputs.prerelease == 'true' }}
+          generate_release_notes: false
