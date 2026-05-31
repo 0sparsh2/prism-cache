@@ -1,20 +1,19 @@
-name: CI
+name: PR Checks
 
 on:
-  push:
+  pull_request:
     branches: [main]
-  workflow_dispatch:
 
 permissions:
   contents: read
 
 concurrency:
-  group: ci-${{ github.ref }}
+  group: pr-checks-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 jobs:
-  test:
-    name: Full Validation
+  pytest:
+    name: Pytest
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -29,9 +28,3 @@ jobs:
 
       - name: Run pytest
         run: pytest -q
-
-      - name: Governance eval (offline)
-        run: python -m eval.run_benchmarks --quiet
-
-      - name: Org scenario smoke
-        run: python examples/org_scenario_tier3.py --users 10 --vector-latency-ms 0

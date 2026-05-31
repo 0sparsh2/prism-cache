@@ -1,0 +1,15 @@
+# Default ownership
+* @0sparsh2
+
+# Repository process and automation
+/.github/ @0sparsh2
+
+# Core package and validation
+/src/ @0sparsh2
+/tests/ @0sparsh2
+/eval/ @0sparsh2
+/examples/ @0sparsh2
+
+# Documentation
+*.md @0sparsh2
+/docs/ @0sparsh2

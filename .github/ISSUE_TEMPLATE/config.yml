@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Documentation
+    url: https://github.com/0sparsh2/prism-cache#readme
+    about: Start with the README for setup, architecture, and usage.
+  - name: Operations Runbook
+    url: https://github.com/0sparsh2/prism-cache/blob/main/docs/OPERATIONS.md
+    about: Check local setup, infra, and demo troubleshooting guidance before opening an issue.
